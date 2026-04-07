@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(sudo npm:*)",
+      "Bash(chmod -R u+w /Users/admin/.npm/_cacache)",
+      "Bash(npx tsc:*)",
+      "Bash(node:*)",
+      "Bash(ls /Users/admin/patrimnet/.env*)"
+    ]
+  }
+}
