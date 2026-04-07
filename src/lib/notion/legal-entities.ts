@@ -7,6 +7,8 @@ import {
   extractRelationId,
 } from "./client";
 import type { LegalEntity, EntityType, TaxRegime } from "@/types";
+import { isDemoMode } from "@/lib/demo";
+import * as demo from "@/lib/demo/data";
 
 type NotionPage = { id: string; properties: Record<string, unknown> };
 
@@ -35,6 +37,20 @@ export async function createLegalEntity(data: {
   address?: string;
   notes?: string;
 }): Promise<LegalEntity> {
+  if (isDemoMode()) {
+    return {
+      id: `demo-entity-new-${Date.now()}`,
+      name: data.name,
+      type: data.type,
+      siren: data.siren,
+      parentEntityId: data.parentEntityId,
+      workspaceId: data.workspaceId,
+      taxRegime: data.taxRegime,
+      address: data.address,
+      notes: data.notes,
+    };
+  }
+
   const page = await notion.pages.create({
     parent: { database_id: requireDbId("LEGAL_ENTITIES") },
     properties: {
@@ -54,6 +70,8 @@ export async function createLegalEntity(data: {
 }
 
 export async function getLegalEntityById(id: string): Promise<LegalEntity | null> {
+  if (isDemoMode()) return demo.ENTITIES.find((e) => e.id === id) ?? null;
+
   try {
     const page = await notion.pages.retrieve({ page_id: id });
     return pageToEntity(page as NotionPage);
@@ -63,6 +81,8 @@ export async function getLegalEntityById(id: string): Promise<LegalEntity | null
 }
 
 export async function listLegalEntities(workspaceId: string): Promise<LegalEntity[]> {
+  if (isDemoMode()) return demo.ENTITIES.filter((e) => e.workspaceId === workspaceId);
+
   const response = await notion.databases.query({
     database_id: requireDbId("LEGAL_ENTITIES"),
     filter: { property: "Workspace ID", rich_text: { equals: workspaceId } },
@@ -83,6 +103,8 @@ export async function updateLegalEntity(
     notes: string;
   }>,
 ): Promise<void> {
+  if (isDemoMode()) return;
+
   await notion.pages.update({
     page_id: id,
     properties: {
@@ -108,6 +130,7 @@ export async function updateLegalEntity(
 }
 
 export async function deleteLegalEntity(id: string): Promise<void> {
+  if (isDemoMode()) return;
   await notion.pages.update({ page_id: id, archived: true });
 }
 

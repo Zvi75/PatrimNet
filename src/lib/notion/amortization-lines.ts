@@ -1,5 +1,7 @@
 import { notion, requireDbId, extractNumber, extractDate, extractRelationId } from "./client";
 import type { AmortizationLine } from "@/types";
+import { isDemoMode } from "@/lib/demo";
+import * as demo from "@/lib/demo/data";
 
 type NotionPage = { id: string; properties: Record<string, unknown> };
 
@@ -32,7 +34,20 @@ export async function createAmortizationLine(data: {
   insurancePayment?: number;
   workspaceId?: string;
 }): Promise<AmortizationLine> {
-  const idLabel = data.periodDate.slice(0, 7); // "YYYY-MM"
+  if (isDemoMode()) {
+    return {
+      id: `demo-amort-new-${Date.now()}`,
+      loanId: data.loanId,
+      periodDate: data.periodDate,
+      capitalPayment: data.capitalPayment,
+      interestPayment: data.interestPayment,
+      insurancePayment: data.insurancePayment,
+      totalPayment: data.totalPayment,
+      remainingCapital: data.remainingCapital,
+    };
+  }
+
+  const idLabel = data.periodDate.slice(0, 7);
   const page = await notion.pages.create({
     parent: { database_id: requireDbId("AMORTIZATION_LINES") },
     properties: {
@@ -54,15 +69,13 @@ export async function createAmortizationLine(data: {
   return pageToLine(page as NotionPage);
 }
 
-/**
- * Bulk insert amortization lines for a loan.
- * Notion rate limit ~3 req/s — 350ms delay between inserts.
- */
 export async function bulkCreateAmortizationLines(
   lines: Omit<Parameters<typeof createAmortizationLine>[0], "loanId">[],
   loanId: string,
   workspaceId: string,
 ): Promise<void> {
+  if (isDemoMode()) return;
+
   for (const line of lines) {
     await createAmortizationLine({ ...line, loanId, workspaceId });
     await new Promise((r) => setTimeout(r, 350));
@@ -70,6 +83,8 @@ export async function bulkCreateAmortizationLines(
 }
 
 export async function listAmortizationLines(loanId: string): Promise<AmortizationLine[]> {
+  if (isDemoMode()) return demo.AMORTIZATION_LINES.filter((l) => l.loanId === loanId);
+
   const response = await notion.databases.query({
     database_id: requireDbId("AMORTIZATION_LINES"),
     filter: { property: "Loan", relation: { contains: loanId } },
@@ -78,7 +93,6 @@ export async function listAmortizationLines(loanId: string): Promise<Amortizatio
   return response.results.map((p) => pageToLine(p as NotionPage));
 }
 
-/** Outstanding capital at a given date (latest line on or before that date) */
 export async function getOutstandingCapitalAt(
   loanId: string,
   date: string,
@@ -90,8 +104,9 @@ export async function getOutstandingCapitalAt(
   return before[0]?.remainingCapital ?? null;
 }
 
-/** Delete all lines for a loan (used when re-parsing an amortization table) */
 export async function deleteAmortizationLines(loanId: string): Promise<void> {
+  if (isDemoMode()) return;
+
   const lines = await listAmortizationLines(loanId);
   for (const line of lines) {
     await notion.pages.update({ page_id: line.id, archived: true });
@@ -99,5 +114,4 @@ export async function deleteAmortizationLines(loanId: string): Promise<void> {
   }
 }
 
-// Keep the helper accessible but don't export a conflicting name
 export { getLineId };

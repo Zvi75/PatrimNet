@@ -10,6 +10,8 @@ import {
   extractRelationId,
 } from "./client";
 import type { Transaction, TransactionType, TransactionDirection } from "@/types";
+import { isDemoMode } from "@/lib/demo";
+import * as demo from "@/lib/demo/data";
 
 type NotionPage = { id: string; properties: Record<string, unknown> };
 
@@ -46,6 +48,24 @@ export async function createTransaction(data: {
   reconciled?: boolean;
   notes?: string;
 }): Promise<Transaction> {
+  if (isDemoMode()) {
+    return {
+      id: `demo-tx-new-${Date.now()}`,
+      label: data.label,
+      type: data.type,
+      amount: data.amount,
+      direction: data.direction,
+      date: data.date,
+      assetId: data.assetId,
+      legalEntityId: data.legalEntityId,
+      leaseId: data.leaseId,
+      loanId: data.loanId,
+      reconciled: data.reconciled ?? false,
+      notes: data.notes,
+      workspaceId: data.workspaceId,
+    };
+  }
+
   const page = await notion.pages.create({
     parent: { database_id: requireDbId("TRANSACTIONS") },
     properties: {
@@ -67,6 +87,8 @@ export async function createTransaction(data: {
 }
 
 export async function getTransactionById(id: string): Promise<Transaction | null> {
+  if (isDemoMode()) return demo.TRANSACTIONS.find((t) => t.id === id) ?? null;
+
   try {
     const page = await notion.pages.retrieve({ page_id: id });
     return pageToTransaction(page as NotionPage);
@@ -89,6 +111,19 @@ export async function listTransactions(
   workspaceId: string,
   filters?: TransactionFilters,
 ): Promise<Transaction[]> {
+  if (isDemoMode()) {
+    let txs = demo.TRANSACTIONS.filter((t) => t.workspaceId === workspaceId);
+    if (filters?.assetId) txs = txs.filter((t) => t.assetId === filters.assetId);
+    if (filters?.legalEntityId) txs = txs.filter((t) => t.legalEntityId === filters.legalEntityId);
+    if (filters?.type) txs = txs.filter((t) => t.type === filters.type);
+    if (filters?.direction) txs = txs.filter((t) => t.direction === filters.direction);
+    if (filters?.reconciled !== undefined)
+      txs = txs.filter((t) => t.reconciled === filters.reconciled);
+    if (filters?.dateFrom) txs = txs.filter((t) => t.date >= filters.dateFrom!);
+    if (filters?.dateTo) txs = txs.filter((t) => t.date <= filters.dateTo!);
+    return txs.sort((a, b) => b.date.localeCompare(a.date));
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filterConditions: any[] = [
     { property: "Workspace ID", rich_text: { equals: workspaceId } },
@@ -144,6 +179,8 @@ export async function updateTransaction(
     loanId: string;
   }>,
 ): Promise<void> {
+  if (isDemoMode()) return;
+
   await notion.pages.update({
     page_id: id,
     properties: {
@@ -165,10 +202,10 @@ export async function updateTransaction(
 }
 
 export async function deleteTransaction(id: string): Promise<void> {
+  if (isDemoMode()) return;
   await notion.pages.update({ page_id: id, archived: true });
 }
 
-/** Monthly cash flow aggregation */
 export async function getMonthlyCashFlow(
   workspaceId: string,
   months = 6,

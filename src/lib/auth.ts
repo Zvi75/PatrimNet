@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import type { UserRole } from "@/types";
+import { isDemoMode, DEMO_WORKSPACE_ID, DEMO_USER_ID } from "@/lib/demo";
 
 export interface WorkspaceContext {
   userId: string;
@@ -15,6 +16,11 @@ export interface WorkspaceContext {
 export async function getWorkspaceContext(): Promise<WorkspaceContext | null> {
   const user = await currentUser();
   if (!user) return null;
+
+  // In demo mode, bypass Notion workspace check
+  if (isDemoMode()) {
+    return { userId: DEMO_USER_ID, workspaceId: DEMO_WORKSPACE_ID, role: "admin" };
+  }
 
   const meta = user.publicMetadata as {
     workspaceId?: string;
@@ -71,6 +77,11 @@ export async function getApiContext(): Promise<WorkspaceContext> {
   const { userId } = await auth();
   if (!userId) {
     throw new Response("Unauthorized", { status: 401 });
+  }
+
+  // In demo mode, bypass Notion workspace check
+  if (isDemoMode()) {
+    return { userId: DEMO_USER_ID, workspaceId: DEMO_WORKSPACE_ID, role: "admin" };
   }
 
   const ctx = await getWorkspaceContext();

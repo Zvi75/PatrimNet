@@ -7,11 +7,12 @@ import {
   extractEmail,
 } from "./client";
 import type { Tenant, TenantType, PaymentScore } from "@/types";
+import { isDemoMode } from "@/lib/demo";
+import * as demo from "@/lib/demo/data";
 
 type NotionPage = { id: string; properties: Record<string, unknown> };
 
 function pageToTenant(page: NotionPage): Tenant {
-  // Phone number extraction
   const phoneProp = (page.properties as Record<string, { phone_number?: string | null }>)["Phone"];
 
   return {
@@ -41,6 +42,21 @@ export async function createTenant(data: {
   paymentScore?: PaymentScore;
   notes?: string;
 }): Promise<Tenant> {
+  if (isDemoMode()) {
+    return {
+      id: `demo-tenant-new-${Date.now()}`,
+      name: data.name,
+      type: data.type,
+      siret: data.siret,
+      email: data.email,
+      phone: data.phone,
+      guarantorName: data.guarantorName,
+      guarantorContact: data.guarantorContact,
+      paymentScore: data.paymentScore,
+      notes: data.notes,
+    };
+  }
+
   const page = await notion.pages.create({
     parent: { database_id: requireDbId("TENANTS") },
     properties: {
@@ -64,6 +80,8 @@ export async function createTenant(data: {
 }
 
 export async function getTenantById(id: string): Promise<Tenant | null> {
+  if (isDemoMode()) return demo.TENANTS.find((t) => t.id === id) ?? null;
+
   try {
     const page = await notion.pages.retrieve({ page_id: id });
     return pageToTenant(page as NotionPage);
@@ -73,6 +91,8 @@ export async function getTenantById(id: string): Promise<Tenant | null> {
 }
 
 export async function listTenants(workspaceId: string): Promise<Tenant[]> {
+  if (isDemoMode()) return demo.TENANTS;
+
   const response = await notion.databases.query({
     database_id: requireDbId("TENANTS"),
     filter: { property: "Workspace ID", rich_text: { equals: workspaceId } },
@@ -95,6 +115,8 @@ export async function updateTenant(
     notes: string;
   }>,
 ): Promise<void> {
+  if (isDemoMode()) return;
+
   await notion.pages.update({
     page_id: id,
     properties: {
@@ -120,5 +142,6 @@ export async function updateTenant(
 }
 
 export async function deleteTenant(id: string): Promise<void> {
+  if (isDemoMode()) return;
   await notion.pages.update({ page_id: id, archived: true });
 }

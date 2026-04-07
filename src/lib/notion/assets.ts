@@ -9,6 +9,8 @@ import {
   extractRelationId,
 } from "./client";
 import type { Asset, AssetType, AssetStatus, DPERating } from "@/types";
+import { isDemoMode } from "@/lib/demo";
+import * as demo from "@/lib/demo/data";
 
 type NotionPage = { id: string; properties: Record<string, unknown> };
 
@@ -47,6 +49,26 @@ export async function createAsset(data: {
   dpe?: DPERating;
   notes?: string;
 }): Promise<Asset> {
+  if (isDemoMode()) {
+    return {
+      id: `demo-asset-new-${Date.now()}`,
+      notionId: undefined,
+      name: data.name,
+      address: data.address,
+      type: data.type,
+      legalEntityId: data.legalEntityId,
+      workspaceId: data.workspaceId,
+      status: data.status,
+      surfaceM2: data.surfaceM2,
+      acquisitionDate: data.acquisitionDate,
+      acquisitionPrice: data.acquisitionPrice,
+      currentMarketValue: data.currentMarketValue,
+      ownershipPercent: data.ownershipPercent,
+      dpe: data.dpe,
+      notes: data.notes,
+    };
+  }
+
   const page = await notion.pages.create({
     parent: { database_id: requireDbId("ASSETS") },
     properties: {
@@ -77,6 +99,8 @@ export async function createAsset(data: {
 }
 
 export async function getAssetById(id: string): Promise<Asset | null> {
+  if (isDemoMode()) return demo.ASSETS.find((a) => a.id === id) ?? null;
+
   try {
     const page = await notion.pages.retrieve({ page_id: id });
     return pageToAsset(page as NotionPage);
@@ -86,6 +110,8 @@ export async function getAssetById(id: string): Promise<Asset | null> {
 }
 
 export async function listAssets(workspaceId: string): Promise<Asset[]> {
+  if (isDemoMode()) return demo.ASSETS.filter((a) => a.workspaceId === workspaceId);
+
   const response = await notion.databases.query({
     database_id: requireDbId("ASSETS"),
     filter: { property: "Workspace ID", rich_text: { equals: workspaceId } },
@@ -95,6 +121,8 @@ export async function listAssets(workspaceId: string): Promise<Asset[]> {
 }
 
 export async function listAssetsByEntity(legalEntityId: string): Promise<Asset[]> {
+  if (isDemoMode()) return demo.ASSETS.filter((a) => a.legalEntityId === legalEntityId);
+
   const response = await notion.databases.query({
     database_id: requireDbId("ASSETS"),
     filter: { property: "Legal Entity", relation: { contains: legalEntityId } },
@@ -120,6 +148,8 @@ export async function updateAsset(
     notes: string;
   }>,
 ): Promise<void> {
+  if (isDemoMode()) return;
+
   await notion.pages.update({
     page_id: id,
     properties: {
@@ -152,11 +182,13 @@ export async function updateAsset(
 }
 
 export async function deleteAsset(id: string): Promise<void> {
+  if (isDemoMode()) return;
   await notion.pages.update({ page_id: id, archived: true });
 }
 
-/** Asset count per workspace (for plan gating) */
 export async function countAssets(workspaceId: string): Promise<number> {
+  if (isDemoMode()) return demo.ASSETS.filter((a) => a.workspaceId === workspaceId).length;
+
   const response = await notion.databases.query({
     database_id: requireDbId("ASSETS"),
     filter: { property: "Workspace ID", rich_text: { equals: workspaceId } },

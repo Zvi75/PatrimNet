@@ -10,6 +10,8 @@ import {
   extractRelationId,
 } from "./client";
 import type { Document, DocumentType } from "@/types";
+import { isDemoMode } from "@/lib/demo";
+import * as demo from "@/lib/demo/data";
 
 type NotionPage = { id: string; properties: Record<string, unknown> };
 
@@ -39,6 +41,21 @@ export async function createDocument(data: {
   leaseId?: string;
   loanId?: string;
 }): Promise<Document> {
+  if (isDemoMode()) {
+    return {
+      id: `demo-doc-new-${Date.now()}`,
+      name: data.name,
+      type: data.type,
+      fileUrl: data.fileUrl,
+      workspaceId: data.workspaceId,
+      assetId: data.assetId,
+      leaseId: data.leaseId,
+      loanId: data.loanId,
+      uploadedAt: new Date().toISOString(),
+      parsedByAI: false,
+    };
+  }
+
   const page = await notion.pages.create({
     parent: { database_id: requireDbId("DOCUMENTS") },
     properties: {
@@ -57,6 +74,8 @@ export async function createDocument(data: {
 }
 
 export async function getDocumentById(id: string): Promise<Document | null> {
+  if (isDemoMode()) return demo.DOCUMENTS.find((d) => d.id === id) ?? null;
+
   try {
     const page = await notion.pages.retrieve({ page_id: id });
     return pageToDocument(page as NotionPage);
@@ -66,6 +85,8 @@ export async function getDocumentById(id: string): Promise<Document | null> {
 }
 
 export async function listDocuments(workspaceId: string): Promise<Document[]> {
+  if (isDemoMode()) return demo.DOCUMENTS.filter((d) => d.workspaceId === workspaceId);
+
   const response = await notion.databases.query({
     database_id: requireDbId("DOCUMENTS"),
     filter: { property: "Workspace ID", rich_text: { equals: workspaceId } },
@@ -75,6 +96,8 @@ export async function listDocuments(workspaceId: string): Promise<Document[]> {
 }
 
 export async function listDocumentsByAsset(assetId: string): Promise<Document[]> {
+  if (isDemoMode()) return demo.DOCUMENTS.filter((d) => d.assetId === assetId);
+
   const response = await notion.databases.query({
     database_id: requireDbId("DOCUMENTS"),
     filter: { property: "Asset", relation: { contains: assetId } },
@@ -84,6 +107,8 @@ export async function listDocumentsByAsset(assetId: string): Promise<Document[]>
 }
 
 export async function listDocumentsByLease(leaseId: string): Promise<Document[]> {
+  if (isDemoMode()) return demo.DOCUMENTS.filter((d) => d.leaseId === leaseId);
+
   const response = await notion.databases.query({
     database_id: requireDbId("DOCUMENTS"),
     filter: { property: "Lease", relation: { contains: leaseId } },
@@ -93,6 +118,8 @@ export async function listDocumentsByLease(leaseId: string): Promise<Document[]>
 }
 
 export async function markDocumentParsed(id: string, extractedData: string): Promise<void> {
+  if (isDemoMode()) return;
+
   await notion.pages.update({
     page_id: id,
     properties: {
@@ -103,5 +130,6 @@ export async function markDocumentParsed(id: string, extractedData: string): Pro
 }
 
 export async function deleteDocument(id: string): Promise<void> {
+  if (isDemoMode()) return;
   await notion.pages.update({ page_id: id, archived: true });
 }

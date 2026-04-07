@@ -8,6 +8,8 @@ import {
   extractDate,
 } from "./client";
 import type { Workspace } from "@/types";
+import { isDemoMode } from "@/lib/demo";
+import * as demo from "@/lib/demo/data";
 
 function pageToWorkspace(page: { id: string; properties: Record<string, unknown> }): Workspace {
   return {
@@ -27,6 +29,8 @@ export async function createWorkspace(data: {
   name: string;
   ownerUserId: string;
 }): Promise<Workspace> {
+  if (isDemoMode()) return { ...demo.WORKSPACE, name: data.name, ownerUserId: data.ownerUserId };
+
   const page = await notion.pages.create({
     parent: { database_id: DB_IDS.WORKSPACES },
     properties: {
@@ -42,6 +46,8 @@ export async function createWorkspace(data: {
 }
 
 export async function getWorkspaceById(id: string): Promise<Workspace | null> {
+  if (isDemoMode()) return id === demo.DEMO_WORKSPACE_ID ? demo.WORKSPACE : null;
+
   try {
     const page = await notion.pages.retrieve({ page_id: id });
     return pageToWorkspace(page as Parameters<typeof pageToWorkspace>[0]);
@@ -51,6 +57,8 @@ export async function getWorkspaceById(id: string): Promise<Workspace | null> {
 }
 
 export async function updateWorkspaceName(id: string, name: string): Promise<void> {
+  if (isDemoMode()) return;
+
   await notion.pages.update({
     page_id: id,
     properties: {
@@ -67,6 +75,8 @@ export async function updateWorkspaceStripe(
     plan?: string;
   },
 ): Promise<void> {
+  if (isDemoMode()) return;
+
   await notion.pages.update({
     page_id: id,
     properties: {

@@ -9,6 +9,8 @@ import {
   extractRelationId,
 } from "./client";
 import type { Loan } from "@/types";
+import { isDemoMode } from "@/lib/demo";
+import * as demo from "@/lib/demo/data";
 
 type NotionPage = { id: string; properties: Record<string, unknown> };
 
@@ -46,6 +48,24 @@ export async function createLoan(data: {
   outstandingCapital?: number;
   notes?: string;
 }): Promise<Loan> {
+  if (isDemoMode()) {
+    return {
+      id: `demo-loan-new-${Date.now()}`,
+      reference: data.reference,
+      assetId: data.assetId,
+      legalEntityId: data.legalEntityId,
+      bank: data.bank,
+      initialAmount: data.initialAmount,
+      interestRate: data.interestRate,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      monthlyPayment: data.monthlyPayment,
+      outstandingCapital: data.outstandingCapital,
+      notes: data.notes,
+      workspaceId: data.workspaceId,
+    };
+  }
+
   const page = await notion.pages.create({
     parent: { database_id: requireDbId("LOANS") },
     properties: {
@@ -70,6 +90,8 @@ export async function createLoan(data: {
 }
 
 export async function getLoanById(id: string): Promise<Loan | null> {
+  if (isDemoMode()) return demo.LOANS.find((l) => l.id === id) ?? null;
+
   try {
     const page = await notion.pages.retrieve({ page_id: id });
     return pageToLoan(page as NotionPage);
@@ -79,6 +101,8 @@ export async function getLoanById(id: string): Promise<Loan | null> {
 }
 
 export async function listLoans(workspaceId: string): Promise<Loan[]> {
+  if (isDemoMode()) return demo.LOANS.filter((l) => l.workspaceId === workspaceId);
+
   const response = await notion.databases.query({
     database_id: requireDbId("LOANS"),
     filter: { property: "Workspace ID", rich_text: { equals: workspaceId } },
@@ -88,6 +112,8 @@ export async function listLoans(workspaceId: string): Promise<Loan[]> {
 }
 
 export async function listLoansByAsset(assetId: string): Promise<Loan[]> {
+  if (isDemoMode()) return demo.LOANS.filter((l) => l.assetId === assetId);
+
   const response = await notion.databases.query({
     database_id: requireDbId("LOANS"),
     filter: { property: "Asset", relation: { contains: assetId } },
@@ -110,6 +136,8 @@ export async function updateLoan(
     notes: string;
   }>,
 ): Promise<void> {
+  if (isDemoMode()) return;
+
   await notion.pages.update({
     page_id: id,
     properties: {
@@ -136,13 +164,10 @@ export async function updateLoan(
 }
 
 export async function deleteLoan(id: string): Promise<void> {
+  if (isDemoMode()) return;
   await notion.pages.update({ page_id: id, archived: true });
 }
 
-/**
- * DSCR = Net Operating Income / Total Debt Service
- * Simplified: (annual rent from leases) / (annual loan payments)
- */
 export function calculateDSCR(annualRent: number, annualDebtService: number): number {
   if (annualDebtService === 0) return Infinity;
   return annualRent / annualDebtService;

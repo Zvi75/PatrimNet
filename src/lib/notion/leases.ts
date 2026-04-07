@@ -11,6 +11,8 @@ import {
 } from "./client";
 import type { Lease, LeaseType, LeaseStatus, IndexationIndex } from "@/types";
 import { daysUntil } from "@/lib/utils";
+import { isDemoMode } from "@/lib/demo";
+import * as demo from "@/lib/demo/data";
 
 type NotionPage = { id: string; properties: Record<string, unknown> };
 
@@ -49,6 +51,25 @@ export async function createLease(data: {
   indexationIndex?: IndexationIndex;
   status?: LeaseStatus;
 }): Promise<Lease> {
+  if (isDemoMode()) {
+    return {
+      id: `demo-lease-new-${Date.now()}`,
+      reference: data.reference,
+      assetId: data.assetId,
+      tenantId: data.tenantId,
+      type: data.type,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      baseRent: data.baseRent,
+      charges: data.charges,
+      tvaApplicable: data.tvaApplicable,
+      indexationIndex: data.indexationIndex,
+      nextRevisionDate: data.nextRevisionDate,
+      status: data.status ?? "Actif",
+      workspaceId: data.workspaceId,
+    };
+  }
+
   const page = await notion.pages.create({
     parent: { database_id: requireDbId("LEASES") },
     properties: {
@@ -75,6 +96,8 @@ export async function createLease(data: {
 }
 
 export async function getLeaseById(id: string): Promise<Lease | null> {
+  if (isDemoMode()) return demo.LEASES.find((l) => l.id === id) ?? null;
+
   try {
     const page = await notion.pages.retrieve({ page_id: id });
     return pageToLease(page as NotionPage);
@@ -84,6 +107,8 @@ export async function getLeaseById(id: string): Promise<Lease | null> {
 }
 
 export async function listLeases(workspaceId: string): Promise<Lease[]> {
+  if (isDemoMode()) return demo.LEASES.filter((l) => l.workspaceId === workspaceId);
+
   const response = await notion.databases.query({
     database_id: requireDbId("LEASES"),
     filter: { property: "Workspace ID", rich_text: { equals: workspaceId } },
@@ -93,6 +118,8 @@ export async function listLeases(workspaceId: string): Promise<Lease[]> {
 }
 
 export async function listLeasesByAsset(assetId: string): Promise<Lease[]> {
+  if (isDemoMode()) return demo.LEASES.filter((l) => l.assetId === assetId);
+
   const response = await notion.databases.query({
     database_id: requireDbId("LEASES"),
     filter: { property: "Asset", relation: { contains: assetId } },
@@ -100,7 +127,6 @@ export async function listLeasesByAsset(assetId: string): Promise<Lease[]> {
   return response.results.map((p) => pageToLease(p as NotionPage));
 }
 
-/** Active leases expiring within `days` days */
 export async function getExpiringLeases(workspaceId: string, days: number): Promise<Lease[]> {
   const leases = await listLeases(workspaceId);
   return leases.filter(
@@ -129,6 +155,8 @@ export async function updateLease(
     status: LeaseStatus;
   }>,
 ): Promise<void> {
+  if (isDemoMode()) return;
+
   await notion.pages.update({
     page_id: id,
     properties: {
@@ -155,10 +183,10 @@ export async function updateLease(
 }
 
 export async function deleteLease(id: string): Promise<void> {
+  if (isDemoMode()) return;
   await notion.pages.update({ page_id: id, archived: true });
 }
 
-/** Total rent roll for a workspace (sum of base rent on active leases) */
 export async function getRentRoll(workspaceId: string): Promise<number> {
   const leases = await listLeases(workspaceId);
   return leases.filter((l) => l.status === "Actif").reduce((sum, l) => sum + l.baseRent, 0);

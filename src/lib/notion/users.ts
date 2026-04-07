@@ -8,6 +8,8 @@ import {
   extractDate,
 } from "./client";
 import type { User, UserRole } from "@/types";
+import { isDemoMode } from "@/lib/demo";
+import * as demo from "@/lib/demo/data";
 
 function pageToUser(page: { id: string; properties: Record<string, unknown> }): User {
   return {
@@ -31,6 +33,8 @@ export async function createUser(data: {
   clerkUserId: string;
   plan?: string;
 }): Promise<User> {
+  if (isDemoMode()) return demo.USERS[0];
+
   const page = await notion.pages.create({
     parent: { database_id: DB_IDS.USERS },
     properties: {
@@ -48,6 +52,8 @@ export async function createUser(data: {
 }
 
 export async function getUserByClerkId(clerkUserId: string): Promise<User | null> {
+  if (isDemoMode()) return demo.USERS[0];
+
   const response = await notion.databases.query({
     database_id: DB_IDS.USERS,
     filter: {
@@ -62,6 +68,8 @@ export async function getUserByClerkId(clerkUserId: string): Promise<User | null
 }
 
 export async function getUserByEmail(email: string): Promise<User | null> {
+  if (isDemoMode()) return demo.USERS.find((u) => u.email === email) ?? null;
+
   const response = await notion.databases.query({
     database_id: DB_IDS.USERS,
     filter: {
@@ -76,6 +84,8 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 }
 
 export async function getWorkspaceMembers(workspaceId: string): Promise<User[]> {
+  if (isDemoMode()) return demo.USERS.filter((u) => u.workspaceId === workspaceId);
+
   const response = await notion.databases.query({
     database_id: DB_IDS.USERS,
     filter: {
@@ -89,6 +99,8 @@ export async function getWorkspaceMembers(workspaceId: string): Promise<User[]> 
 }
 
 export async function updateUserRole(notionPageId: string, role: UserRole): Promise<void> {
+  if (isDemoMode()) return;
+
   await notion.pages.update({
     page_id: notionPageId,
     properties: {
@@ -98,6 +110,8 @@ export async function updateUserRole(notionPageId: string, role: UserRole): Prom
 }
 
 export async function removeUserFromWorkspace(notionPageId: string): Promise<void> {
+  if (isDemoMode()) return;
+
   await notion.pages.update({
     page_id: notionPageId,
     archived: true,
@@ -105,6 +119,8 @@ export async function removeUserFromWorkspace(notionPageId: string): Promise<voi
 }
 
 export async function updateUserClerkId(notionPageId: string, clerkUserId: string): Promise<void> {
+  if (isDemoMode()) return;
+
   await notion.pages.update({
     page_id: notionPageId,
     properties: {
