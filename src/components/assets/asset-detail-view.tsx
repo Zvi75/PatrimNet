@@ -4,8 +4,15 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft, Pencil, MapPin, Calendar, TrendingUp, FileText,
-  CreditCard, Building2, AlertTriangle,
+  ArrowLeft,
+  Pencil,
+  MapPin,
+  Calendar,
+  TrendingUp,
+  FileText,
+  CreditCard,
+  Building2,
+  AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -18,8 +25,8 @@ import { formatCurrency, formatDate, formatPercent, daysUntil } from "@/lib/util
 import type { Asset, LegalEntity, Lease, Loan, Document, UserRole } from "@/types";
 
 const STATUS_VARIANTS: Record<string, "success" | "destructive" | "warning" | "info"> = {
-  "Occupé": "success",
-  "Vacant": "destructive",
+  Occupé: "success",
+  Vacant: "destructive",
   "En travaux": "warning",
   "En vente": "info",
 };
@@ -33,22 +40,33 @@ interface AssetDetailViewProps {
   role: UserRole;
 }
 
-export function AssetDetailView({ asset, entity, leases, loans, documents, role }: AssetDetailViewProps) {
+export function AssetDetailView({
+  asset,
+  entity,
+  leases,
+  loans,
+  documents,
+  role,
+}: AssetDetailViewProps) {
   const router = useRouter();
 
   // Financial calculations
   const activeLeases = leases.filter((l) => l.status === "Actif");
   const monthlyRent = activeLeases.reduce((s, l) => s + l.baseRent + (l.charges ?? 0), 0);
   const annualRent = monthlyRent * 12;
-  const netYield = asset.currentMarketValue && annualRent > 0
-    ? (annualRent / asset.currentMarketValue) * 100
-    : null;
+  const netYield =
+    asset.currentMarketValue && annualRent > 0
+      ? (annualRent / asset.currentMarketValue) * 100
+      : null;
   const monthlyDebtService = loans.reduce((s, l) => s + l.monthlyPayment, 0);
   const annualDebtService = monthlyDebtService * 12;
   const dscr = annualDebtService > 0 ? annualRent / annualDebtService : null;
-  const occupancyRate = leases.length > 0
-    ? (activeLeases.length / leases.length) * 100
-    : (asset.status === "Occupé" ? 100 : 0);
+  const occupancyRate =
+    leases.length > 0
+      ? (activeLeases.length / leases.length) * 100
+      : asset.status === "Occupé"
+        ? 100
+        : 0;
 
   async function handleDelete() {
     const res = await fetch(`/api/assets/${asset.id}`, { method: "DELETE" });
@@ -95,7 +113,11 @@ export function AssetDetailView({ asset, entity, leases, loans, documents, role 
           )}
           {role === "admin" && (
             <ConfirmDialog
-              trigger={<Button size="sm" variant="ghost" className="text-red-500 hover:text-red-600">Supprimer</Button>}
+              trigger={
+                <Button size="sm" variant="ghost" className="text-red-500 hover:text-red-600">
+                  Supprimer
+                </Button>
+              }
               title="Supprimer cet actif ?"
               description="L'actif sera archivé. Les baux, emprunts et transactions associés resteront dans Notion."
               confirmLabel="Supprimer"
@@ -131,11 +153,23 @@ export function AssetDetailView({ asset, entity, leases, loans, documents, role 
               { label: "Surface", value: asset.surfaceM2 ? `${asset.surfaceM2} m²` : "—" },
               { label: "DPE", value: asset.dpe ?? "—" },
               { label: "Entité juridique", value: entity?.name ?? "—" },
-              { label: "Détention", value: asset.ownershipPercent ? formatPercent(asset.ownershipPercent) : "—" },
+              {
+                label: "Détention",
+                value: asset.ownershipPercent ? formatPercent(asset.ownershipPercent) : "—",
+              },
               { label: "Régime fiscal", value: entity?.taxRegime ?? "—" },
-              { label: "Date d'acquisition", value: asset.acquisitionDate ? formatDate(asset.acquisitionDate) : "—" },
-              { label: "Prix d'acquisition", value: asset.acquisitionPrice ? formatCurrency(asset.acquisitionPrice) : "—" },
-              { label: "Valeur de marché", value: asset.currentMarketValue ? formatCurrency(asset.currentMarketValue) : "—" },
+              {
+                label: "Date d'acquisition",
+                value: asset.acquisitionDate ? formatDate(asset.acquisitionDate) : "—",
+              },
+              {
+                label: "Prix d'acquisition",
+                value: asset.acquisitionPrice ? formatCurrency(asset.acquisitionPrice) : "—",
+              },
+              {
+                label: "Valeur de marché",
+                value: asset.currentMarketValue ? formatCurrency(asset.currentMarketValue) : "—",
+              },
             ].map(({ label, value }) => (
               <div key={label} className="rounded-lg border border-slate-100 bg-white p-4">
                 <p className="text-xs font-medium text-slate-400">{label}</p>
@@ -158,7 +192,9 @@ export function AssetDetailView({ asset, entity, leases, loans, documents, role 
             <Card>
               <CardContent className="p-5">
                 <p className="text-xs text-slate-400">Loyer mensuel brut</p>
-                <p className="mt-1 text-2xl font-bold text-slate-900">{formatCurrency(monthlyRent)}</p>
+                <p className="mt-1 text-2xl font-bold text-slate-900">
+                  {formatCurrency(monthlyRent)}
+                </p>
                 <p className="text-xs text-slate-400">{formatCurrency(annualRent)} / an</p>
               </CardContent>
             </Card>
@@ -174,14 +210,20 @@ export function AssetDetailView({ asset, entity, leases, loans, documents, role 
             <Card>
               <CardContent className="p-5">
                 <p className="text-xs text-slate-400">Service de la dette / mois</p>
-                <p className="mt-1 text-2xl font-bold text-slate-900">{formatCurrency(monthlyDebtService)}</p>
-                <p className="text-xs text-slate-400">{loans.length} emprunt{loans.length !== 1 ? "s" : ""}</p>
+                <p className="mt-1 text-2xl font-bold text-slate-900">
+                  {formatCurrency(monthlyDebtService)}
+                </p>
+                <p className="text-xs text-slate-400">
+                  {loans.length} emprunt{loans.length !== 1 ? "s" : ""}
+                </p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-5">
                 <p className="text-xs text-slate-400">DSCR</p>
-                <p className={`mt-1 text-2xl font-bold ${dscr === null ? "text-slate-400" : dscr >= 1.25 ? "text-green-600" : dscr >= 1 ? "text-orange-500" : "text-red-600"}`}>
+                <p
+                  className={`mt-1 text-2xl font-bold ${dscr === null ? "text-slate-400" : dscr >= 1.25 ? "text-green-600" : dscr >= 1 ? "text-orange-500" : "text-red-600"}`}
+                >
                   {dscr !== null ? dscr.toFixed(2) : "—"}
                 </p>
                 <p className="text-xs text-slate-400">ratio couverture dette</p>
@@ -191,9 +233,10 @@ export function AssetDetailView({ asset, entity, leases, loans, documents, role 
 
           {dscr !== null && dscr < 1 && (
             <div className="mt-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-4">
-              <AlertTriangle className="h-4 w-4 flex-shrink-0 text-red-500 mt-0.5" />
+              <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
               <p className="text-sm text-red-700">
-                <strong>Alerte DSCR :</strong> Le ratio couverture de la dette est inférieur à 1. Les revenus locatifs ne couvrent pas le service de la dette.
+                <strong>Alerte DSCR :</strong> Le ratio couverture de la dette est inférieur à 1.
+                Les revenus locatifs ne couvrent pas le service de la dette.
               </p>
             </div>
           )}
@@ -216,17 +259,29 @@ export function AssetDetailView({ asset, entity, leases, loans, documents, role 
               {leases.map((lease, i) => {
                 const days = daysUntil(lease.endDate);
                 return (
-                  <div key={lease.id} className={`flex items-center gap-4 px-5 py-4 ${i < leases.length - 1 ? "border-b border-slate-100" : ""}`}>
+                  <div
+                    key={lease.id}
+                    className={`flex items-center gap-4 px-5 py-4 ${i < leases.length - 1 ? "border-b border-slate-100" : ""}`}
+                  >
                     <div className="flex-1">
                       <p className="text-sm font-medium text-slate-800">{lease.reference}</p>
                       <p className="text-xs text-slate-400">
                         {lease.type} · {formatDate(lease.startDate)} → {formatDate(lease.endDate)}
                       </p>
                     </div>
-                    <span className="text-sm font-semibold">{formatCurrency(lease.baseRent)}/mois</span>
-                    <Badge variant={STATUS_VARIANTS[lease.status] ?? "secondary"} className="text-xs">{lease.status}</Badge>
+                    <span className="text-sm font-semibold">
+                      {formatCurrency(lease.baseRent)}/mois
+                    </span>
+                    <Badge
+                      variant={STATUS_VARIANTS[lease.status] ?? "secondary"}
+                      className="text-xs"
+                    >
+                      {lease.status}
+                    </Badge>
                     {lease.status === "Actif" && days <= 90 && (
-                      <Badge variant="warning" className="text-xs">J-{days}</Badge>
+                      <Badge variant="warning" className="text-xs">
+                        J-{days}
+                      </Badge>
                     )}
                   </div>
                 );
@@ -250,16 +305,24 @@ export function AssetDetailView({ asset, entity, leases, loans, documents, role 
           ) : (
             <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
               {loans.map((loan, i) => (
-                <div key={loan.id} className={`flex items-center gap-4 px-5 py-4 ${i < loans.length - 1 ? "border-b border-slate-100" : ""}`}>
+                <div
+                  key={loan.id}
+                  className={`flex items-center gap-4 px-5 py-4 ${i < loans.length - 1 ? "border-b border-slate-100" : ""}`}
+                >
                   <div className="flex-1">
                     <p className="text-sm font-medium">{loan.reference}</p>
                     <p className="text-xs text-slate-400">
-                      {loan.bank} · {loan.interestRate}% · {formatDate(loan.startDate)} → {formatDate(loan.endDate)}
+                      {loan.bank} · {loan.interestRate}% · {formatDate(loan.startDate)} →{" "}
+                      {formatDate(loan.endDate)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-semibold">{formatCurrency(loan.monthlyPayment)}/mois</p>
-                    <p className="text-xs text-slate-400">Capital initial : {formatCurrency(loan.initialAmount)}</p>
+                    <p className="text-sm font-semibold">
+                      {formatCurrency(loan.monthlyPayment)}/mois
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      Capital initial : {formatCurrency(loan.initialAmount)}
+                    </p>
                   </div>
                   <Badge variant={loan.parsed ? "success" : "secondary"} className="text-xs">
                     {loan.parsed ? "TA parsé" : "TA manquant"}

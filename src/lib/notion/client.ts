@@ -27,9 +27,7 @@ export function requireDbId(key: keyof typeof DB_IDS): string {
 
 // Helper to extract text from Notion title property
 export function extractTitle(page: { properties: Record<string, unknown> }, key = "Name"): string {
-  const prop = page.properties[key] as
-    | { title: Array<{ plain_text: string }> }
-    | undefined;
+  const prop = page.properties[key] as { title: Array<{ plain_text: string }> } | undefined;
   return prop?.title?.[0]?.plain_text ?? "";
 }
 
@@ -38,9 +36,7 @@ export function extractRichText(
   page: { properties: Record<string, unknown> },
   key: string,
 ): string {
-  const prop = page.properties[key] as
-    | { rich_text: Array<{ plain_text: string }> }
-    | undefined;
+  const prop = page.properties[key] as { rich_text: Array<{ plain_text: string }> } | undefined;
   return prop?.rich_text?.[0]?.plain_text ?? "";
 }
 

@@ -6,7 +6,7 @@ export interface AmortizationScheduleInput {
   annualInterestRate: number; // percent, e.g. 3.5
   monthlyPayment: number;
   startDate: string; // YYYY-MM-DD
-  endDate: string;   // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
   insuranceMonthly?: number;
 }
 
@@ -25,8 +25,7 @@ export function generateAmortizationSchedule(
 
   // Number of payments
   const months =
-    (end.getFullYear() - start.getFullYear()) * 12 +
-    (end.getMonth() - start.getMonth());
+    (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
 
   if (months <= 0 || initialAmount <= 0) return [];
 
@@ -59,7 +58,8 @@ export function generateAmortizationSchedule(
       capitalPayment: Math.round(capitalPayment * 100) / 100,
       interestPayment: Math.round(interestPayment * 100) / 100,
       insurancePayment: insuranceMonthly,
-      totalPayment: Math.round((capitalPayment + interestPayment + (insuranceMonthly ?? 0)) * 100) / 100,
+      totalPayment:
+        Math.round((capitalPayment + interestPayment + (insuranceMonthly ?? 0)) * 100) / 100,
       remainingCapital: Math.round(remaining * 100) / 100,
     });
 
@@ -84,8 +84,6 @@ export function estimateOutstandingCapital(
 /**
  * Total interest cost over the life of the loan.
  */
-export function totalInterestCost(
-  schedule: Omit<AmortizationLine, "id" | "notionId">[],
-): number {
+export function totalInterestCost(schedule: Omit<AmortizationLine, "id" | "notionId">[]): number {
   return Math.round(schedule.reduce((s, l) => s + l.interestPayment, 0) * 100) / 100;
 }

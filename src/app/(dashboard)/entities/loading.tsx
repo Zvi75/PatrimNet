@@ -9,7 +9,10 @@ export default function EntitiesLoading() {
       </div>
       <div className="space-y-2">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4">
+          <div
+            key={i}
+            className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4"
+          >
             <Skeleton className="h-9 w-9 rounded-lg" />
             <div className="flex-1 space-y-1.5">
               <Skeleton className="h-4 w-40" />

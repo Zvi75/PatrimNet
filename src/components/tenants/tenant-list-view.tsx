@@ -7,10 +7,19 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -64,7 +73,9 @@ export function TenantListView({ tenants, role }: TenantListViewProps) {
         icon={Users}
         title="Aucun locataire"
         description="Ajoutez vos locataires pour les associer à vos baux."
-        action={canEdit ? <TenantFormDialog trigger={<Button>Ajouter un locataire</Button>} /> : undefined}
+        action={
+          canEdit ? <TenantFormDialog trigger={<Button>Ajouter un locataire</Button>} /> : undefined
+        }
       />
     );
   }
@@ -80,17 +91,29 @@ export function TenantListView({ tenants, role }: TenantListViewProps) {
           className="w-52"
         />
         <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-44"><SelectValue placeholder="Type" /></SelectTrigger>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="Type" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous les types</SelectItem>
-            {TENANT_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+            {TENANT_TYPES.map((t) => (
+              <SelectItem key={t} value={t}>
+                {t}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select value={filterScore} onValueChange={setFilterScore}>
-          <SelectTrigger className="w-44"><SelectValue placeholder="Score" /></SelectTrigger>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="Score" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous les scores</SelectItem>
-            {PAYMENT_SCORES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            {PAYMENT_SCORES.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <span className="ml-auto text-sm text-slate-400">
@@ -111,12 +134,17 @@ export function TenantListView({ tenants, role }: TenantListViewProps) {
             </div>
 
             {/* Info */}
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <p className="text-sm font-semibold text-slate-800">{tenant.name}</p>
-                <Badge variant="secondary" className="text-xs">{tenant.type}</Badge>
+                <Badge variant="secondary" className="text-xs">
+                  {tenant.type}
+                </Badge>
                 {tenant.paymentScore && (
-                  <Badge variant={SCORE_VARIANTS[tenant.paymentScore] ?? "secondary"} className="text-xs">
+                  <Badge
+                    variant={SCORE_VARIANTS[tenant.paymentScore] ?? "secondary"}
+                    className="text-xs"
+                  >
                     {tenant.paymentScore}
                   </Badge>
                 )}
@@ -124,12 +152,14 @@ export function TenantListView({ tenants, role }: TenantListViewProps) {
               <div className="mt-0.5 flex items-center gap-3 text-xs text-slate-400">
                 {tenant.email && (
                   <span className="flex items-center gap-1">
-                    <Mail className="h-3 w-3" />{tenant.email}
+                    <Mail className="h-3 w-3" />
+                    {tenant.email}
                   </span>
                 )}
                 {tenant.phone && (
                   <span className="flex items-center gap-1">
-                    <Phone className="h-3 w-3" />{tenant.phone}
+                    <Phone className="h-3 w-3" />
+                    {tenant.phone}
                   </span>
                 )}
                 {tenant.siret && <span>SIRET {tenant.siret}</span>}
@@ -148,21 +178,30 @@ export function TenantListView({ tenants, role }: TenantListViewProps) {
             {canEdit && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100"
+                  >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => setEditTenant(tenant)}>
-                    <Pencil className="mr-2 h-4 w-4" />Modifier
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Modifier
                   </DropdownMenuItem>
                   {role === "admin" && (
                     <>
                       <DropdownMenuSeparator />
                       <ConfirmDialog
                         trigger={
-                          <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 focus:text-red-600">
-                            <Trash2 className="mr-2 h-4 w-4" />Supprimer
+                          <DropdownMenuItem
+                            onSelect={(e) => e.preventDefault()}
+                            className="text-red-600 focus:text-red-600"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Supprimer
                           </DropdownMenuItem>
                         }
                         title={`Supprimer "${tenant.name}" ?`}

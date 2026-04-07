@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getApiContext } from "@/lib/auth";
-import { getLegalEntityById, updateLegalEntity, deleteLegalEntity } from "@/lib/notion/legal-entities";
+import {
+  getLegalEntityById,
+  updateLegalEntity,
+  deleteLegalEntity,
+} from "@/lib/notion/legal-entities";
 import { ENTITY_TYPES, TAX_REGIMES } from "@/lib/constants";
 
 const schema = z.object({
@@ -44,7 +48,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof Response) return err;
-    if (err instanceof z.ZodError) return NextResponse.json({ error: err.flatten() }, { status: 400 });
+    if (err instanceof z.ZodError)
+      return NextResponse.json({ error: err.flatten() }, { status: 400 });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -23,10 +23,7 @@ const REQUIRED_SERVER_VARS = [
   "STRIPE_PRICE_ENTERPRISE",
 ] as const;
 
-const REQUIRED_PUBLIC_VARS = [
-  "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-  "NEXT_PUBLIC_APP_URL",
-] as const;
+const REQUIRED_PUBLIC_VARS = ["NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "NEXT_PUBLIC_APP_URL"] as const;
 
 export function validateEnv(): void {
   const missing: string[] = [];

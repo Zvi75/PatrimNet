@@ -38,7 +38,9 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                 className="flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors hover:bg-slate-50"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${tx.direction === "Encaissement" ? "bg-green-100" : "bg-red-100"}`}>
+                  <div
+                    className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${tx.direction === "Encaissement" ? "bg-green-100" : "bg-red-100"}`}
+                  >
                     {tx.direction === "Encaissement" ? (
                       <ArrowDownLeft className="h-4 w-4 text-green-600" />
                     ) : (
@@ -47,12 +49,17 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                   </div>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-slate-800">{tx.label}</p>
-                    <p className="text-xs text-slate-400">{tx.type} · {formatDate(tx.date)}</p>
+                    <p className="text-xs text-slate-400">
+                      {tx.type} · {formatDate(tx.date)}
+                    </p>
                   </div>
                 </div>
                 <div className="flex flex-shrink-0 items-center gap-3">
-                  <span className={`text-sm font-semibold ${tx.direction === "Encaissement" ? "text-green-600" : "text-red-600"}`}>
-                    {tx.direction === "Encaissement" ? "+" : "-"}{formatCurrency(tx.amount)}
+                  <span
+                    className={`text-sm font-semibold ${tx.direction === "Encaissement" ? "text-green-600" : "text-red-600"}`}
+                  >
+                    {tx.direction === "Encaissement" ? "+" : "-"}
+                    {formatCurrency(tx.amount)}
                   </span>
                   <Badge variant={tx.reconciled ? "success" : "warning"} className="text-xs">
                     {tx.reconciled ? "Réconcilié" : "En attente"}

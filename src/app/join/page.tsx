@@ -4,7 +4,13 @@ import { JoinWorkspace } from "@/components/join/join-workspace";
 
 export const metadata = { title: "Rejoindre un workspace" };
 
-export default function JoinPage({ searchParams }: { searchParams: { token?: string } }) {
+export default async function JoinPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string }>;
+}) {
+  const { token } = await searchParams;
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-4">
       <div className="w-full max-w-md">
@@ -15,7 +21,7 @@ export default function JoinPage({ searchParams }: { searchParams: { token?: str
           </div>
         </div>
         <Suspense fallback={null}>
-          <JoinWorkspace token={searchParams.token} />
+          <JoinWorkspace token={token} />
         </Suspense>
       </div>
     </div>

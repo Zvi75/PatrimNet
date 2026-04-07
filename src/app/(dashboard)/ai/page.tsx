@@ -43,9 +43,9 @@ export default async function AIPage() {
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-8 text-center">
           <Sparkles className="mx-auto mb-3 h-10 w-10 text-amber-400" />
           <p className="text-lg font-semibold text-amber-800">Fonctionnalité IA — Plan Pro</p>
-          <p className="mt-2 text-sm text-amber-600 max-w-md mx-auto">
-            L'assistant IA et le parsing automatique de tableaux d'amortissement sont disponibles
-            à partir du plan Pro (149€/mois).
+          <p className="mx-auto mt-2 max-w-md text-sm text-amber-600">
+            L'assistant IA et le parsing automatique de tableaux d'amortissement sont disponibles à
+            partir du plan Pro (149€/mois).
           </p>
           <div className="mt-4 space-y-1 text-sm text-amber-700">
             <p>✦ Requêtes en langage naturel sur votre portefeuille</p>
@@ -53,9 +53,7 @@ export default async function AIPage() {
             <p>✦ Alertes et recommandations intelligentes</p>
           </div>
           <Link href="/billing">
-            <Button className="mt-6 bg-amber-600 hover:bg-amber-700">
-              Passer au plan Pro →
-            </Button>
+            <Button className="mt-6 bg-amber-600 hover:bg-amber-700">Passer au plan Pro →</Button>
           </Link>
         </div>
       )}

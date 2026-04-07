@@ -42,10 +42,7 @@ export function EntityTreeView({ tree, flat, role }: EntityTreeViewProps) {
         description="Créez votre première entité pour commencer à structurer votre patrimoine (Holding, SCI, SAS…)"
         action={
           role !== "read-only" ? (
-            <EntityFormDialog
-              entities={flat}
-              trigger={<Button>Créer une entité</Button>}
-            />
+            <EntityFormDialog entities={flat} trigger={<Button>Créer une entité</Button>} />
           ) : undefined
         }
       />

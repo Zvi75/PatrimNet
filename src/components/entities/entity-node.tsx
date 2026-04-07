@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Building2, MoreHorizontal, Pencil, Trash2, Plus } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Building2,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  Plus,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,7 +44,14 @@ interface EntityNodeProps {
   onDelete: (entity: LegalEntity) => void;
 }
 
-export function EntityNode({ entity, depth, role, allEntities, onEdit, onDelete }: EntityNodeProps) {
+export function EntityNode({
+  entity,
+  depth,
+  role,
+  allEntities,
+  onEdit,
+  onDelete,
+}: EntityNodeProps) {
   const [expanded, setExpanded] = useState(depth < 2);
   const hasChildren = entity.children && entity.children.length > 0;
   const canEdit = role !== "read-only";
@@ -69,14 +84,10 @@ export function EntityNode({ entity, depth, role, allEntities, onEdit, onDelete 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="truncate text-sm font-semibold text-slate-800">{entity.name}</span>
-            {entity.siren && (
-              <span className="text-xs text-slate-400">SIREN {entity.siren}</span>
-            )}
+            {entity.siren && <span className="text-xs text-slate-400">SIREN {entity.siren}</span>}
           </div>
-          <div className="flex items-center gap-2 mt-0.5">
-            {entity.taxRegime && (
-              <span className="text-xs text-slate-400">{entity.taxRegime}</span>
-            )}
+          <div className="mt-0.5 flex items-center gap-2">
+            {entity.taxRegime && <span className="text-xs text-slate-400">{entity.taxRegime}</span>}
             {entity.address && (
               <span className="truncate text-xs text-slate-400">{entity.address}</span>
             )}

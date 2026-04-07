@@ -6,7 +6,15 @@ import { listLegalEntities } from "@/lib/notion/legal-entities";
 import { listTransactions } from "@/lib/notion/transactions";
 import { listAmortizationLines } from "@/lib/notion/amortization-lines";
 import { generateAmortizationSchedule, estimateOutstandingCapital } from "@/lib/amortization";
-import type { Asset, Lease, Tenant, Loan, LegalEntity, Transaction, AmortizationLine } from "@/types";
+import type {
+  Asset,
+  Lease,
+  Tenant,
+  Loan,
+  LegalEntity,
+  Transaction,
+  AmortizationLine,
+} from "@/types";
 
 export interface PortfolioReportData {
   assets: Asset[];
@@ -75,7 +83,11 @@ export async function buildPortfolioReportData(workspaceId: string): Promise<Por
     listTenants(workspaceId),
   ]);
   return {
-    assets, leases, loans, entities, tenants,
+    assets,
+    leases,
+    loans,
+    entities,
+    tenants,
     assetMap: new Map(assets.map((a) => [a.id, a.name])),
     tenantMap: new Map(tenants.map((t) => [t.id, t.name])),
     entityMap: new Map(entities.map((e) => [e.id, e.name])),
@@ -84,7 +96,10 @@ export async function buildPortfolioReportData(workspaceId: string): Promise<Por
   };
 }
 
-export async function buildAssetReportData(workspaceId: string, assetId: string): Promise<AssetReportData> {
+export async function buildAssetReportData(
+  workspaceId: string,
+  assetId: string,
+): Promise<AssetReportData> {
   const base = await buildPortfolioReportData(workspaceId);
   const asset = await getAssetById(assetId);
   if (!asset || asset.workspaceId !== workspaceId) throw new Error("Asset not found");
@@ -97,7 +112,9 @@ export async function buildAssetReportData(workspaceId: string, assetId: string)
 }
 
 export async function buildCashFlowData(
-  workspaceId: string, dateFrom: string, dateTo: string,
+  workspaceId: string,
+  dateFrom: string,
+  dateTo: string,
 ): Promise<CashFlowReportData> {
   const [transactions, assets, entities] = await Promise.all([
     listTransactions(workspaceId, { dateFrom, dateTo }),
@@ -105,15 +122,21 @@ export async function buildCashFlowData(
     listLegalEntities(workspaceId),
   ]);
   return {
-    transactions, assets, entities,
+    transactions,
+    assets,
+    entities,
     assetMap: new Map(assets.map((a) => [a.id, a.name])),
     entityMap: new Map(entities.map((e) => [e.id, e.name])),
-    dateFrom, dateTo,
+    dateFrom,
+    dateTo,
     generatedAt: new Date().toLocaleDateString("fr-FR", { dateStyle: "long" }),
   };
 }
 
-export async function buildFiscalData(workspaceId: string, year: number): Promise<FiscalReportData> {
+export async function buildFiscalData(
+  workspaceId: string,
+  year: number,
+): Promise<FiscalReportData> {
   const [assets, leases, entities, transactions] = await Promise.all([
     listAssets(workspaceId),
     listLeases(workspaceId),
@@ -124,14 +147,21 @@ export async function buildFiscalData(workspaceId: string, year: number): Promis
     }),
   ]);
   return {
-    year, entities, assets, leases, transactions,
+    year,
+    entities,
+    assets,
+    leases,
+    transactions,
     assetMap: new Map(assets.map((a) => [a.id, a.name])),
     entityMap: new Map(entities.map((e) => [e.id, e.name])),
     generatedAt: new Date().toLocaleDateString("fr-FR", { dateStyle: "long" }),
   };
 }
 
-export async function buildLoanPlanData(workspaceId: string, loanId: string): Promise<LoanPlanData> {
+export async function buildLoanPlanData(
+  workspaceId: string,
+  loanId: string,
+): Promise<LoanPlanData> {
   const loan = await getLoanById(loanId);
   if (!loan || loan.workspaceId !== workspaceId) throw new Error("Loan not found");
 
@@ -158,12 +188,18 @@ export async function buildLoanPlanData(workspaceId: string, loanId: string): Pr
   const entity = entities.find((e) => e.id === loan.legalEntityId);
 
   return {
-    loan, asset, entity, schedule,
+    loan,
+    asset,
+    entity,
+    schedule,
     generatedAt: new Date().toLocaleDateString("fr-FR", { dateStyle: "long" }),
   };
 }
 
-export async function buildTenantReportData(workspaceId: string, leaseId: string): Promise<TenantReportData> {
+export async function buildTenantReportData(
+  workspaceId: string,
+  leaseId: string,
+): Promise<TenantReportData> {
   const leases = await listLeases(workspaceId);
   const lease = leases.find((l) => l.id === leaseId);
   if (!lease) throw new Error("Lease not found");
@@ -176,7 +212,10 @@ export async function buildTenantReportData(workspaceId: string, leaseId: string
   const asset = assets.find((a) => a.id === lease.assetId) ?? null;
   const leaseTransactions = transactions.filter((t) => t.leaseId === leaseId);
   return {
-    lease, tenant, asset, transactions: leaseTransactions,
+    lease,
+    tenant,
+    asset,
+    transactions: leaseTransactions,
     generatedAt: new Date().toLocaleDateString("fr-FR", { dateStyle: "long" }),
   };
 }

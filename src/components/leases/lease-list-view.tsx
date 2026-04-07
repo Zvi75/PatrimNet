@@ -7,10 +7,19 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -20,10 +29,10 @@ import { LEASE_TYPES, LEASE_STATUSES } from "@/lib/constants";
 import type { Lease, Asset, Tenant, UserRole } from "@/types";
 
 const STATUS_VARIANTS: Record<string, "success" | "destructive" | "warning" | "secondary"> = {
-  "Actif": "success",
-  "Résilié": "destructive",
+  Actif: "success",
+  Résilié: "destructive",
   "En cours de renouvellement": "warning",
-  "Expiré": "secondary",
+  Expiré: "secondary",
 };
 
 interface LeaseListViewProps {
@@ -47,7 +56,13 @@ export function LeaseListView({ leases, assets, tenants, role }: LeaseListViewPr
     const q = search.toLowerCase();
     const assetName = assetMap.get(l.assetId) ?? "";
     const tenantName = tenantMap.get(l.tenantId) ?? "";
-    if (q && !l.reference.toLowerCase().includes(q) && !assetName.toLowerCase().includes(q) && !tenantName.toLowerCase().includes(q)) return false;
+    if (
+      q &&
+      !l.reference.toLowerCase().includes(q) &&
+      !assetName.toLowerCase().includes(q) &&
+      !tenantName.toLowerCase().includes(q)
+    )
+      return false;
     if (filterStatus !== "all" && l.status !== filterStatus) return false;
     if (filterType !== "all" && l.type !== filterType) return false;
     return true;
@@ -79,13 +94,15 @@ export function LeaseListView({ leases, assets, tenants, role }: LeaseListViewPr
         icon={FileText}
         title="Aucun bail enregistré"
         description="Créez votre premier bail pour commencer le suivi des relations locatives."
-        action={canEdit ? (
-          <LeaseFormDialog
-            assets={assets}
-            tenants={tenants}
-            trigger={<Button>Créer un bail</Button>}
-          />
-        ) : undefined}
+        action={
+          canEdit ? (
+            <LeaseFormDialog
+              assets={assets}
+              tenants={tenants}
+              trigger={<Button>Créer un bail</Button>}
+            />
+          ) : undefined
+        }
       />
     );
   }
@@ -97,7 +114,10 @@ export function LeaseListView({ leases, assets, tenants, role }: LeaseListViewPr
         <div className="flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3">
           <AlertTriangle className="h-4 w-4 flex-shrink-0 text-orange-500" />
           <p className="text-sm text-orange-700">
-            <strong>{expiringCount} bail{expiringCount !== 1 ? "x" : ""}</strong> expire{expiringCount !== 1 ? "nt" : ""} dans moins de 90 jours.
+            <strong>
+              {expiringCount} bail{expiringCount !== 1 ? "x" : ""}
+            </strong>{" "}
+            expire{expiringCount !== 1 ? "nt" : ""} dans moins de 90 jours.
           </p>
         </div>
       )}
@@ -111,17 +131,29 @@ export function LeaseListView({ leases, assets, tenants, role }: LeaseListViewPr
           className="w-52"
         />
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-44"><SelectValue placeholder="Statut" /></SelectTrigger>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="Statut" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous les statuts</SelectItem>
-            {LEASE_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            {LEASE_STATUSES.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-44"><SelectValue placeholder="Type" /></SelectTrigger>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="Type" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous les types</SelectItem>
-            {LEASE_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+            {LEASE_TYPES.map((t) => (
+              <SelectItem key={t} value={t}>
+                {t}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <span className="ml-auto text-sm text-slate-400">
@@ -143,14 +175,16 @@ export function LeaseListView({ leases, assets, tenants, role }: LeaseListViewPr
               className={`group flex items-center gap-4 px-5 py-4 ${i < filtered.length - 1 ? "border-b border-slate-100" : ""}`}
             >
               {/* Left info */}
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-semibold text-slate-800">{lease.reference}</p>
                   <Badge variant={STATUS_VARIANTS[lease.status] ?? "secondary"} className="text-xs">
                     {lease.status}
                   </Badge>
                   {isExpiringSoon && (
-                    <Badge variant="warning" className="text-xs">J-{days}</Badge>
+                    <Badge variant="warning" className="text-xs">
+                      J-{days}
+                    </Badge>
                   )}
                 </div>
                 <p className="mt-0.5 text-xs text-slate-400">
@@ -163,35 +197,46 @@ export function LeaseListView({ leases, assets, tenants, role }: LeaseListViewPr
               </div>
 
               {/* Rent */}
-              <div className="text-right flex-shrink-0">
-                <p className="text-sm font-semibold text-slate-800">{formatCurrency(lease.baseRent)}/mois</p>
+              <div className="flex-shrink-0 text-right">
+                <p className="text-sm font-semibold text-slate-800">
+                  {formatCurrency(lease.baseRent)}/mois
+                </p>
                 {lease.charges ? (
-                  <p className="text-xs text-slate-400">+ {formatCurrency(lease.charges)} charges</p>
+                  <p className="text-xs text-slate-400">
+                    + {formatCurrency(lease.charges)} charges
+                  </p>
                 ) : null}
-                {lease.tvaApplicable && (
-                  <p className="text-xs text-blue-500">TVA applicable</p>
-                )}
+                {lease.tvaApplicable && <p className="text-xs text-blue-500">TVA applicable</p>}
               </div>
 
               {/* Actions */}
               {canEdit && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100"
+                    >
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => setEditLease(lease)}>
-                      <Pencil className="mr-2 h-4 w-4" />Modifier
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Modifier
                     </DropdownMenuItem>
                     {role === "admin" && (
                       <>
                         <DropdownMenuSeparator />
                         <ConfirmDialog
                           trigger={
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 focus:text-red-600">
-                              <Trash2 className="mr-2 h-4 w-4" />Supprimer
+                            <DropdownMenuItem
+                              onSelect={(e) => e.preventDefault()}
+                              className="text-red-600 focus:text-red-600"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Supprimer
                             </DropdownMenuItem>
                           }
                           title={`Supprimer le bail "${lease.reference}" ?`}

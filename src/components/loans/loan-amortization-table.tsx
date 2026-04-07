@@ -20,7 +20,10 @@ export function LoanAmortizationTable({ loanId }: LoanAmortizationTableProps) {
   const [fetched, setFetched] = useState(false);
 
   async function load() {
-    if (fetched) { setOpen((v) => !v); return; }
+    if (fetched) {
+      setOpen((v) => !v);
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch(`/api/loans/${loanId}/amortization`);
@@ -87,9 +90,13 @@ export function LoanAmortizationTable({ loanId }: LoanAmortizationTableProps) {
             <table className="w-full text-xs">
               <thead className="sticky top-0 bg-slate-50">
                 <tr className="border-b border-slate-200">
-                  {["Période", "Capital", "Intérêts", "Assurance", "Total", "Restant dû"].map((h) => (
-                    <th key={h} className="px-3 py-2 text-left font-medium text-slate-500">{h}</th>
-                  ))}
+                  {["Période", "Capital", "Intérêts", "Assurance", "Total", "Restant dû"].map(
+                    (h) => (
+                      <th key={h} className="px-3 py-2 text-left font-medium text-slate-500">
+                        {h}
+                      </th>
+                    ),
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -104,11 +111,21 @@ export function LoanAmortizationTable({ loanId }: LoanAmortizationTableProps) {
                         {formatDate(line.periodDate)}
                         {isCurrent && <span className="ml-1 text-blue-600">◀</span>}
                       </td>
-                      <td className="px-3 py-1.5 text-green-700">{formatCurrency(line.capitalPayment)}</td>
-                      <td className="px-3 py-1.5 text-red-600">{formatCurrency(line.interestPayment)}</td>
-                      <td className="px-3 py-1.5 text-slate-500">{line.insurancePayment ? formatCurrency(line.insurancePayment) : "—"}</td>
-                      <td className="px-3 py-1.5 font-medium">{formatCurrency(line.totalPayment)}</td>
-                      <td className="px-3 py-1.5 text-slate-700">{formatCurrency(line.remainingCapital)}</td>
+                      <td className="px-3 py-1.5 text-green-700">
+                        {formatCurrency(line.capitalPayment)}
+                      </td>
+                      <td className="px-3 py-1.5 text-red-600">
+                        {formatCurrency(line.interestPayment)}
+                      </td>
+                      <td className="px-3 py-1.5 text-slate-500">
+                        {line.insurancePayment ? formatCurrency(line.insurancePayment) : "—"}
+                      </td>
+                      <td className="px-3 py-1.5 font-medium">
+                        {formatCurrency(line.totalPayment)}
+                      </td>
+                      <td className="px-3 py-1.5 text-slate-700">
+                        {formatCurrency(line.remainingCapital)}
+                      </td>
                     </tr>
                   );
                 })}

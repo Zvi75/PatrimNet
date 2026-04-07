@@ -40,11 +40,15 @@ export async function POST(req: Request) {
     // Plan gate: check asset limit
     const workspace = await getWorkspaceById(ctx.workspaceId);
     if (!workspace) return NextResponse.json({ error: "Workspace not found" }, { status: 404 });
-    const maxAssets = getMaxAssets(workspace.plan.toUpperCase() as "STARTER" | "PRO" | "ENTERPRISE");
+    const maxAssets = getMaxAssets(
+      workspace.plan.toUpperCase() as "STARTER" | "PRO" | "ENTERPRISE",
+    );
     const current = await countAssets(ctx.workspaceId);
     if (current >= maxAssets) {
       return NextResponse.json(
-        { error: `Limite d'actifs atteinte pour votre plan (${maxAssets} max). Passez au plan supérieur.` },
+        {
+          error: `Limite d'actifs atteinte pour votre plan (${maxAssets} max). Passez au plan supérieur.`,
+        },
         { status: 403 },
       );
     }
@@ -55,7 +59,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ asset }, { status: 201 });
   } catch (err) {
     if (err instanceof Response) return err;
-    if (err instanceof z.ZodError) return NextResponse.json({ error: err.flatten() }, { status: 400 });
+    if (err instanceof z.ZodError)
+      return NextResponse.json({ error: err.flatten() }, { status: 400 });
     console.error("[POST /api/assets]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

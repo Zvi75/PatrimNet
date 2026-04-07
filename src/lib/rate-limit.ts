@@ -34,10 +34,13 @@ export function isRateLimited(key: string, limit: number, windowMs: number): boo
 
 // Prune stale entries every 10 minutes to prevent memory leak
 if (typeof setInterval !== "undefined") {
-  setInterval(() => {
-    const now = Date.now();
-    store.forEach((entry, key) => {
-      if (now > entry.resetAt) store.delete(key);
-    });
-  }, 10 * 60 * 1000);
+  setInterval(
+    () => {
+      const now = Date.now();
+      store.forEach((entry, key) => {
+        if (now > entry.resetAt) store.delete(key);
+      });
+    },
+    10 * 60 * 1000,
+  );
 }

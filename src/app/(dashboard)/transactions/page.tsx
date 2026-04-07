@@ -23,7 +23,8 @@ export default async function TransactionsPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Journal des transactions</h1>
           <p className="mt-1 text-sm text-slate-500">
-            {transactions.length} transaction{transactions.length !== 1 ? "s" : ""} · Encaissements, décaissements et réconciliation
+            {transactions.length} transaction{transactions.length !== 1 ? "s" : ""} · Encaissements,
+            décaissements et réconciliation
           </p>
         </div>
         {ctx.role !== "read-only" && (

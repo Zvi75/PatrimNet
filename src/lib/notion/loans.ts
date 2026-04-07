@@ -60,7 +60,9 @@ export async function createLoan(data: {
       "Monthly Payment €": { number: data.monthlyPayment },
       "Workspace ID": { rich_text: [{ text: { content: data.workspaceId } }] },
       Parsed: { checkbox: false },
-      ...(data.outstandingCapital !== undefined && { "Outstanding Capital €": { number: data.outstandingCapital } }),
+      ...(data.outstandingCapital !== undefined && {
+        "Outstanding Capital €": { number: data.outstandingCapital },
+      }),
       ...(data.notes && { Notes: { rich_text: [{ text: { content: data.notes } }] } }),
     },
   });
@@ -113,14 +115,22 @@ export async function updateLoan(
     properties: {
       ...(data.reference && { Reference: { title: [{ text: { content: data.reference } }] } }),
       ...(data.bank !== undefined && { Bank: { rich_text: [{ text: { content: data.bank } }] } }),
-      ...(data.initialAmount !== undefined && { "Initial Amount €": { number: data.initialAmount } }),
+      ...(data.initialAmount !== undefined && {
+        "Initial Amount €": { number: data.initialAmount },
+      }),
       ...(data.interestRate !== undefined && { "Interest Rate %": { number: data.interestRate } }),
       ...(data.startDate && { "Start Date": { date: { start: data.startDate } } }),
       ...(data.endDate && { "End Date": { date: { start: data.endDate } } }),
-      ...(data.monthlyPayment !== undefined && { "Monthly Payment €": { number: data.monthlyPayment } }),
-      ...(data.outstandingCapital !== undefined && { "Outstanding Capital €": { number: data.outstandingCapital } }),
+      ...(data.monthlyPayment !== undefined && {
+        "Monthly Payment €": { number: data.monthlyPayment },
+      }),
+      ...(data.outstandingCapital !== undefined && {
+        "Outstanding Capital €": { number: data.outstandingCapital },
+      }),
       ...(data.parsed !== undefined && { Parsed: { checkbox: data.parsed } }),
-      ...(data.notes !== undefined && { Notes: { rich_text: [{ text: { content: data.notes } }] } }),
+      ...(data.notes !== undefined && {
+        Notes: { rich_text: [{ text: { content: data.notes } }] },
+      }),
     },
   });
 }

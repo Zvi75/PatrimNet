@@ -57,10 +57,18 @@ export async function createAsset(data: {
       "Legal Entity": { relation: [{ id: data.legalEntityId }] },
       "Workspace ID": { rich_text: [{ text: { content: data.workspaceId } }] },
       ...(data.surfaceM2 !== undefined && { "Surface m²": { number: data.surfaceM2 } }),
-      ...(data.acquisitionDate && { "Acquisition Date": { date: { start: data.acquisitionDate } } }),
-      ...(data.acquisitionPrice !== undefined && { "Acquisition Price €": { number: data.acquisitionPrice } }),
-      ...(data.currentMarketValue !== undefined && { "Current Market Value €": { number: data.currentMarketValue } }),
-      ...(data.ownershipPercent !== undefined && { "Ownership %": { number: data.ownershipPercent } }),
+      ...(data.acquisitionDate && {
+        "Acquisition Date": { date: { start: data.acquisitionDate } },
+      }),
+      ...(data.acquisitionPrice !== undefined && {
+        "Acquisition Price €": { number: data.acquisitionPrice },
+      }),
+      ...(data.currentMarketValue !== undefined && {
+        "Current Market Value €": { number: data.currentMarketValue },
+      }),
+      ...(data.ownershipPercent !== undefined && {
+        "Ownership %": { number: data.ownershipPercent },
+      }),
       ...(data.dpe && { DPE: { select: { name: data.dpe } } }),
       ...(data.notes && { Notes: { rich_text: [{ text: { content: data.notes } }] } }),
     },
@@ -116,17 +124,29 @@ export async function updateAsset(
     page_id: id,
     properties: {
       ...(data.name && { Name: { title: [{ text: { content: data.name } }] } }),
-      ...(data.address !== undefined && { Address: { rich_text: [{ text: { content: data.address } }] } }),
+      ...(data.address !== undefined && {
+        Address: { rich_text: [{ text: { content: data.address } }] },
+      }),
       ...(data.type && { Type: { select: { name: data.type } } }),
       ...(data.status && { Status: { select: { name: data.status } } }),
       ...(data.surfaceM2 !== undefined && { "Surface m²": { number: data.surfaceM2 } }),
-      ...(data.acquisitionDate && { "Acquisition Date": { date: { start: data.acquisitionDate } } }),
-      ...(data.acquisitionPrice !== undefined && { "Acquisition Price €": { number: data.acquisitionPrice } }),
-      ...(data.currentMarketValue !== undefined && { "Current Market Value €": { number: data.currentMarketValue } }),
-      ...(data.ownershipPercent !== undefined && { "Ownership %": { number: data.ownershipPercent } }),
+      ...(data.acquisitionDate && {
+        "Acquisition Date": { date: { start: data.acquisitionDate } },
+      }),
+      ...(data.acquisitionPrice !== undefined && {
+        "Acquisition Price €": { number: data.acquisitionPrice },
+      }),
+      ...(data.currentMarketValue !== undefined && {
+        "Current Market Value €": { number: data.currentMarketValue },
+      }),
+      ...(data.ownershipPercent !== undefined && {
+        "Ownership %": { number: data.ownershipPercent },
+      }),
       ...(data.legalEntityId && { "Legal Entity": { relation: [{ id: data.legalEntityId }] } }),
       ...(data.dpe && { DPE: { select: { name: data.dpe } } }),
-      ...(data.notes !== undefined && { Notes: { rich_text: [{ text: { content: data.notes } }] } }),
+      ...(data.notes !== undefined && {
+        Notes: { rich_text: [{ text: { content: data.notes } }] },
+      }),
     },
   });
 }

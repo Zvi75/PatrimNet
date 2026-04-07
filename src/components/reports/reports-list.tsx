@@ -98,7 +98,9 @@ export function ReportsList({ assets = [], leases = [], loans = [] }: ReportsLis
           reportType={activeReport}
           reportTitle={REPORTS.find((r) => r.id === activeReport)!.title}
           open={!!activeReport}
-          onOpenChange={(open) => { if (!open) setActiveReport(null); }}
+          onOpenChange={(open) => {
+            if (!open) setActiveReport(null);
+          }}
           assets={assets}
           leases={leases}
           loans={loans}

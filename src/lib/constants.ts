@@ -56,12 +56,7 @@ export const LEASE_TYPES = [
   "Convention",
 ] as const;
 
-export const LEASE_STATUSES = [
-  "Actif",
-  "Résilié",
-  "En cours de renouvellement",
-  "Expiré",
-] as const;
+export const LEASE_STATUSES = ["Actif", "Résilié", "En cours de renouvellement", "Expiré"] as const;
 
 export const INDEXATION_INDEXES = ["ILC", "IRL", "ICC", "None"] as const;
 

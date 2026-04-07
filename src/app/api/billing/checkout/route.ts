@@ -57,7 +57,8 @@ export async function POST(req: Request) {
       success_url: `${appUrl}/billing?success=1`,
       cancel_url: `${appUrl}/billing?canceled=1`,
       subscription_data: {
-        trial_period_days: workspace.plan === "STARTER" || !workspace.stripeSubscriptionId ? 0 : undefined,
+        trial_period_days:
+          workspace.plan === "STARTER" || !workspace.stripeSubscriptionId ? 0 : undefined,
         metadata: { workspaceId: ctx.workspaceId, plan },
       },
       metadata: { workspaceId: ctx.workspaceId, plan },

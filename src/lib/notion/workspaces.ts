@@ -1,4 +1,12 @@
-import { notion, DB_IDS, extractTitle, extractRichText, extractSelect, extractCheckbox, extractDate } from "./client";
+import {
+  notion,
+  DB_IDS,
+  extractTitle,
+  extractRichText,
+  extractSelect,
+  extractCheckbox,
+  extractDate,
+} from "./client";
 import type { Workspace } from "@/types";
 
 function pageToWorkspace(page: { id: string; properties: Record<string, unknown> }): Workspace {

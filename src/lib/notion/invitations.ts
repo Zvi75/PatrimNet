@@ -17,7 +17,12 @@ export interface PendingInvitation {
   workspaceName: string;
 }
 
-function parseMeta(notes: string): { token?: string; status?: string; invitedBy?: string; workspaceName?: string } {
+function parseMeta(notes: string): {
+  token?: string;
+  status?: string;
+  invitedBy?: string;
+  workspaceName?: string;
+} {
   try {
     return JSON.parse(notes);
   } catch {

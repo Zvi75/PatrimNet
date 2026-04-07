@@ -78,10 +78,7 @@ export function AIQueryInterface() {
         const { done, value } = await reader.read();
         if (done) break;
         full += decoder.decode(value, { stream: true });
-        setMessages((prev) => [
-          ...prev.slice(0, -1),
-          { role: "assistant", content: full },
-        ]);
+        setMessages((prev) => [...prev.slice(0, -1), { role: "assistant", content: full }]);
       }
     } catch {
       setMessages((prev) => [
@@ -152,9 +149,7 @@ export function AIQueryInterface() {
                 <div
                   className={cn(
                     "flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-xs",
-                    msg.role === "user"
-                      ? "bg-blue-600 text-white"
-                      : "bg-slate-100 text-slate-600",
+                    msg.role === "user" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600",
                   )}
                 >
                   {msg.role === "user" ? (
@@ -168,9 +163,7 @@ export function AIQueryInterface() {
                 <div
                   className={cn(
                     "max-w-[80%] rounded-xl px-4 py-2.5 text-sm",
-                    msg.role === "user"
-                      ? "bg-blue-600 text-white"
-                      : "bg-slate-50 text-slate-800",
+                    msg.role === "user" ? "bg-blue-600 text-white" : "bg-slate-50 text-slate-800",
                   )}
                 >
                   {msg.content === "" && streaming && i === messages.length - 1 ? (
@@ -203,7 +196,7 @@ export function AIQueryInterface() {
             <button
               onClick={() => setMessages([])}
               disabled={streaming}
-              className="ml-auto flex-shrink-0 flex items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-xs text-slate-400 hover:text-slate-600 disabled:opacity-40"
+              className="ml-auto flex flex-shrink-0 items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-xs text-slate-400 hover:text-slate-600 disabled:opacity-40"
             >
               <RotateCcw className="h-3 w-3" /> Réinitialiser
             </button>

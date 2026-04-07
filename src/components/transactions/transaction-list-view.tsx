@@ -2,15 +2,32 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Receipt, ArrowDownLeft, ArrowUpRight, MoreHorizontal, Pencil, Trash2, Check } from "lucide-react";
+import {
+  Receipt,
+  ArrowDownLeft,
+  ArrowUpRight,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  Check,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -27,7 +44,13 @@ interface TransactionListViewProps {
   role: UserRole;
 }
 
-export function TransactionListView({ transactions, assets, entities, leases, role }: TransactionListViewProps) {
+export function TransactionListView({
+  transactions,
+  assets,
+  entities,
+  leases,
+  role,
+}: TransactionListViewProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [filterDir, setFilterDir] = useState("all");
@@ -47,8 +70,12 @@ export function TransactionListView({ transactions, assets, entities, leases, ro
     return true;
   });
 
-  const totalIn = filtered.filter((t) => t.direction === "Encaissement").reduce((s, t) => s + t.amount, 0);
-  const totalOut = filtered.filter((t) => t.direction === "Décaissement").reduce((s, t) => s + t.amount, 0);
+  const totalIn = filtered
+    .filter((t) => t.direction === "Encaissement")
+    .reduce((s, t) => s + t.amount, 0);
+  const totalOut = filtered
+    .filter((t) => t.direction === "Décaissement")
+    .reduce((s, t) => s + t.amount, 0);
   const net = totalIn - totalOut;
 
   async function handleDelete(tx: Transaction) {
@@ -83,14 +110,16 @@ export function TransactionListView({ transactions, assets, entities, leases, ro
         icon={Receipt}
         title="Aucune transaction"
         description="Commencez à enregistrer vos encaissements et décaissements."
-        action={canEdit ? (
-          <TransactionFormDialog
-            assets={assets}
-            entities={entities}
-            leases={leases}
-            trigger={<Button>Créer une transaction</Button>}
-          />
-        ) : undefined}
+        action={
+          canEdit ? (
+            <TransactionFormDialog
+              assets={assets}
+              entities={entities}
+              leases={leases}
+              trigger={<Button>Créer une transaction</Button>}
+            />
+          ) : undefined
+        }
       />
     );
   }
@@ -110,7 +139,8 @@ export function TransactionListView({ transactions, assets, entities, leases, ro
         <div className="rounded-lg border border-slate-100 bg-white p-4">
           <p className="text-xs text-slate-400">Net</p>
           <p className={`mt-1 text-lg font-bold ${net >= 0 ? "text-green-600" : "text-red-600"}`}>
-            {net >= 0 ? "+" : ""}{formatCurrency(net)}
+            {net >= 0 ? "+" : ""}
+            {formatCurrency(net)}
           </p>
         </div>
       </div>
@@ -124,21 +154,35 @@ export function TransactionListView({ transactions, assets, entities, leases, ro
           className="w-52"
         />
         <Select value={filterDir} onValueChange={setFilterDir}>
-          <SelectTrigger className="w-40"><SelectValue placeholder="Sens" /></SelectTrigger>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Sens" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous les sens</SelectItem>
-            {TRANSACTION_DIRECTIONS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+            {TRANSACTION_DIRECTIONS.map((d) => (
+              <SelectItem key={d} value={d}>
+                {d}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-40"><SelectValue placeholder="Type" /></SelectTrigger>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Type" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous les types</SelectItem>
-            {TRANSACTION_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+            {TRANSACTION_TYPES.map((t) => (
+              <SelectItem key={t} value={t}>
+                {t}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select value={filterReconciled} onValueChange={setFilterReconciled}>
-          <SelectTrigger className="w-40"><SelectValue placeholder="Réconciliation" /></SelectTrigger>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Réconciliation" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous</SelectItem>
             <SelectItem value="yes">Réconciliés</SelectItem>
@@ -158,15 +202,18 @@ export function TransactionListView({ transactions, assets, entities, leases, ro
             className={`group flex items-center gap-4 px-5 py-3.5 ${i < filtered.length - 1 ? "border-b border-slate-100" : ""}`}
           >
             {/* Icon */}
-            <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full ${tx.direction === "Encaissement" ? "bg-green-100" : "bg-red-100"}`}>
-              {tx.direction === "Encaissement"
-                ? <ArrowDownLeft className="h-4 w-4 text-green-600" />
-                : <ArrowUpRight className="h-4 w-4 text-red-600" />
-              }
+            <div
+              className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full ${tx.direction === "Encaissement" ? "bg-green-100" : "bg-red-100"}`}
+            >
+              {tx.direction === "Encaissement" ? (
+                <ArrowDownLeft className="h-4 w-4 text-green-600" />
+              ) : (
+                <ArrowUpRight className="h-4 w-4 text-red-600" />
+              )}
             </div>
 
             {/* Info */}
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-slate-800">{tx.label}</p>
               <p className="text-xs text-slate-400">
                 {tx.type} · {formatDate(tx.date)}
@@ -175,21 +222,27 @@ export function TransactionListView({ transactions, assets, entities, leases, ro
             </div>
 
             {/* Amount */}
-            <span className={`flex-shrink-0 text-sm font-semibold ${tx.direction === "Encaissement" ? "text-green-600" : "text-red-600"}`}>
-              {tx.direction === "Encaissement" ? "+" : "-"}{formatCurrency(tx.amount)}
+            <span
+              className={`flex-shrink-0 text-sm font-semibold ${tx.direction === "Encaissement" ? "text-green-600" : "text-red-600"}`}
+            >
+              {tx.direction === "Encaissement" ? "+" : "-"}
+              {formatCurrency(tx.amount)}
             </span>
 
             {/* Reconcile badge */}
             {canEdit ? (
               <button
                 onClick={() => toggleReconcile(tx)}
-                className={`flex-shrink-0 flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${tx.reconciled ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-amber-100 text-amber-700 hover:bg-amber-200"}`}
+                className={`flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${tx.reconciled ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-amber-100 text-amber-700 hover:bg-amber-200"}`}
               >
                 {tx.reconciled && <Check className="h-3 w-3" />}
                 {tx.reconciled ? "Réconcilié" : "En attente"}
               </button>
             ) : (
-              <Badge variant={tx.reconciled ? "success" : "warning"} className="flex-shrink-0 text-xs">
+              <Badge
+                variant={tx.reconciled ? "success" : "warning"}
+                className="flex-shrink-0 text-xs"
+              >
                 {tx.reconciled ? "Réconcilié" : "En attente"}
               </Badge>
             )}
@@ -198,21 +251,30 @@ export function TransactionListView({ transactions, assets, entities, leases, ro
             {canEdit && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100"
+                  >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => setEditTx(tx)}>
-                    <Pencil className="mr-2 h-4 w-4" />Modifier
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Modifier
                   </DropdownMenuItem>
                   {role === "admin" && (
                     <>
                       <DropdownMenuSeparator />
                       <ConfirmDialog
                         trigger={
-                          <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 focus:text-red-600">
-                            <Trash2 className="mr-2 h-4 w-4" />Supprimer
+                          <DropdownMenuItem
+                            onSelect={(e) => e.preventDefault()}
+                            className="text-red-600 focus:text-red-600"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Supprimer
                           </DropdownMenuItem>
                         }
                         title="Supprimer cette transaction ?"

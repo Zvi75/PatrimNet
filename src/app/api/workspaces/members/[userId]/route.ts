@@ -7,10 +7,7 @@ import type { UserRole } from "@/types";
 
 const patchSchema = z.object({ role: z.enum(["analyst", "read-only"]) });
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ userId: string }> },
-) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
     const { userId } = await params;
     const ctx = await getApiContext();
@@ -28,7 +25,10 @@ export async function PATCH(
 
     // Cannot change own role
     if (userId === ctx.userId) {
-      return NextResponse.json({ error: "Impossible de modifier son propre rôle" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Impossible de modifier son propre rôle" },
+        { status: 400 },
+      );
     }
 
     await updateUserRole(member.notionId, role as UserRole);
@@ -45,16 +45,14 @@ export async function PATCH(
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof Response) return err;
-    if (err instanceof z.ZodError) return NextResponse.json({ error: err.flatten() }, { status: 400 });
+    if (err instanceof z.ZodError)
+      return NextResponse.json({ error: err.flatten() }, { status: 400 });
     console.error("[PATCH /api/workspaces/members]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
-export async function DELETE(
-  _req: Request,
-  { params }: { params: Promise<{ userId: string }> },
-) {
+export async function DELETE(_req: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
     const { userId } = await params;
     const ctx = await getApiContext();

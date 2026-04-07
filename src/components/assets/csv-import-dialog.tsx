@@ -5,12 +5,23 @@ import { useRouter } from "next/navigation";
 import { Upload, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { LegalEntity } from "@/types";
@@ -39,7 +50,11 @@ Bureau Opéra,8 boulevard des Capucines 75009 Paris,Bureau,Vacant,120,850000,,50
 
 function parseCsv(raw: string): { rows: ParsedRow[]; error?: string } {
   const lines = raw.trim().split(/\r?\n/).filter(Boolean);
-  if (lines.length < 2) return { rows: [], error: "Le fichier doit contenir au moins un en-tête et une ligne de données." };
+  if (lines.length < 2)
+    return {
+      rows: [],
+      error: "Le fichier doit contenir au moins un en-tête et une ligne de données.",
+    };
 
   const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
   const nameIdx = headers.indexOf("name");
@@ -98,7 +113,11 @@ export function CsvImportDialog({ entities, trigger }: CsvImportDialogProps) {
 
   function handleParse() {
     const { rows, error } = parseCsv(csv);
-    if (error) { setParseError(error); setParsed([]); return; }
+    if (error) {
+      setParseError(error);
+      setParsed([]);
+      return;
+    }
     setParseError("");
     setParsed(rows);
   }
@@ -111,8 +130,13 @@ export function CsvImportDialog({ entities, trigger }: CsvImportDialogProps) {
       const text = ev.target?.result as string;
       setCsv(text);
       const { rows, error } = parseCsv(text);
-      if (error) { setParseError(error); setParsed([]); }
-      else { setParseError(""); setParsed(rows); }
+      if (error) {
+        setParseError(error);
+        setParsed([]);
+      } else {
+        setParseError("");
+        setParsed(rows);
+      }
     };
     reader.readAsText(file);
     e.target.value = "";
@@ -145,7 +169,9 @@ export function CsvImportDialog({ entities, trigger }: CsvImportDialogProps) {
       if (!res.ok) throw new Error(data.error ?? "Erreur import");
       setResults({ created: data.created, errors: data.errors });
       if (data.created > 0) {
-        toast.success(`${data.created} actif${data.created !== 1 ? "s" : ""} importé${data.created !== 1 ? "s" : ""}`);
+        toast.success(
+          `${data.created} actif${data.created !== 1 ? "s" : ""} importé${data.created !== 1 ? "s" : ""}`,
+        );
         router.refresh();
       }
     } catch (err) {
@@ -156,19 +182,32 @@ export function CsvImportDialog({ entities, trigger }: CsvImportDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); else setOpen(true); }}>
-      <DialogTrigger asChild onClick={() => setOpen(true)}>{trigger}</DialogTrigger>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) handleClose();
+        else setOpen(true);
+      }}
+    >
+      <DialogTrigger asChild onClick={() => setOpen(true)}>
+        {trigger}
+      </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Importer des actifs (CSV)</DialogTitle>
         </DialogHeader>
 
         {results ? (
-          <div className="py-6 text-center space-y-3">
+          <div className="space-y-3 py-6 text-center">
             <CheckCircle2 className="mx-auto h-10 w-10 text-green-500" />
-            <p className="font-semibold text-slate-800">{results.created} actif{results.created !== 1 ? "s" : ""} créé{results.created !== 1 ? "s" : ""}</p>
+            <p className="font-semibold text-slate-800">
+              {results.created} actif{results.created !== 1 ? "s" : ""} créé
+              {results.created !== 1 ? "s" : ""}
+            </p>
             {results.errors > 0 && (
-              <p className="text-sm text-red-600">{results.errors} ligne{results.errors !== 1 ? "s" : ""} en erreur</p>
+              <p className="text-sm text-red-600">
+                {results.errors} ligne{results.errors !== 1 ? "s" : ""} en erreur
+              </p>
             )}
             <Button onClick={handleClose}>Fermer</Button>
           </div>
@@ -178,9 +217,15 @@ export function CsvImportDialog({ entities, trigger }: CsvImportDialogProps) {
             <div className="space-y-2">
               <Label>Entité juridique pour tous les actifs *</Label>
               <Select value={entityId} onValueChange={setEntityId}>
-                <SelectTrigger><SelectValue placeholder="Sélectionner une entité" /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner une entité" />
+                </SelectTrigger>
                 <SelectContent>
-                  {entities.map((e) => <SelectItem key={e.id} value={e.id}>{e.name} ({e.type})</SelectItem>)}
+                  {entities.map((e) => (
+                    <SelectItem key={e.id} value={e.id}>
+                      {e.name} ({e.type})
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -206,20 +251,34 @@ export function CsvImportDialog({ entities, trigger }: CsvImportDialogProps) {
                     className="text-xs"
                     onClick={() => fileRef.current?.click()}
                   >
-                    <Upload className="h-3 w-3 mr-1" />
+                    <Upload className="mr-1 h-3 w-3" />
                     Fichier .csv
                   </Button>
-                  <input ref={fileRef} type="file" accept=".csv,text/csv" className="hidden" onChange={handleFileChange} />
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept=".csv,text/csv"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
                 </div>
               </div>
               <Textarea
                 value={csv}
-                onChange={(e) => { setCsv(e.target.value); setParsed([]); setParseError(""); }}
+                onChange={(e) => {
+                  setCsv(e.target.value);
+                  setParsed([]);
+                  setParseError("");
+                }}
                 rows={5}
                 placeholder="name,address,type,status,surfaceM2,…"
                 className="font-mono text-xs"
               />
-              <p className="text-xs text-slate-400">Colonnes requises : <code>name</code>, <code>address</code>. Optionnelles : type, status, surfaceM2, acquisitionDate, acquisitionPrice, currentMarketValue, ownershipPercent, notes.</p>
+              <p className="text-xs text-slate-400">
+                Colonnes requises : <code>name</code>, <code>address</code>. Optionnelles : type,
+                status, surfaceM2, acquisitionDate, acquisitionPrice, currentMarketValue,
+                ownershipPercent, notes.
+              </p>
             </div>
 
             {parseError && (
@@ -234,25 +293,35 @@ export function CsvImportDialog({ entities, trigger }: CsvImportDialogProps) {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-slate-700">Aperçu</span>
-                  <Badge variant="secondary">{parsed.length} ligne{parsed.length !== 1 ? "s" : ""}</Badge>
+                  <Badge variant="secondary">
+                    {parsed.length} ligne{parsed.length !== 1 ? "s" : ""}
+                  </Badge>
                 </div>
                 <ScrollArea className="max-h-48 rounded-lg border border-slate-200">
                   <table className="w-full text-xs">
-                    <thead className="bg-slate-50 sticky top-0">
+                    <thead className="sticky top-0 bg-slate-50">
                       <tr>
                         {["Nom", "Adresse", "Type", "Statut", "Surface"].map((h) => (
-                          <th key={h} className="px-3 py-2 text-left font-medium text-slate-500">{h}</th>
+                          <th key={h} className="px-3 py-2 text-left font-medium text-slate-500">
+                            {h}
+                          </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {parsed.map((row, i) => (
                         <tr key={i} className="border-t border-slate-100">
-                          <td className="px-3 py-1.5 font-medium text-slate-800 max-w-[140px] truncate">{row.name}</td>
-                          <td className="px-3 py-1.5 text-slate-500 max-w-[160px] truncate">{row.address}</td>
+                          <td className="max-w-[140px] truncate px-3 py-1.5 font-medium text-slate-800">
+                            {row.name}
+                          </td>
+                          <td className="max-w-[160px] truncate px-3 py-1.5 text-slate-500">
+                            {row.address}
+                          </td>
                           <td className="px-3 py-1.5 text-slate-500">{row.type ?? "—"}</td>
                           <td className="px-3 py-1.5 text-slate-500">{row.status ?? "—"}</td>
-                          <td className="px-3 py-1.5 text-slate-500">{row.surfaceM2 ? `${row.surfaceM2} m²` : "—"}</td>
+                          <td className="px-3 py-1.5 text-slate-500">
+                            {row.surfaceM2 ? `${row.surfaceM2} m²` : "—"}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -262,14 +331,20 @@ export function CsvImportDialog({ entities, trigger }: CsvImportDialogProps) {
             )}
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleClose}>Annuler</Button>
+              <Button type="button" variant="outline" onClick={handleClose}>
+                Annuler
+              </Button>
               {parsed.length === 0 ? (
                 <Button type="button" onClick={handleParse} disabled={!csv.trim()}>
                   Analyser le CSV
                 </Button>
               ) : (
                 <Button type="button" onClick={handleImport} disabled={loading || !entityId}>
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : `Importer ${parsed.length} actif${parsed.length !== 1 ? "s" : ""}`}
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    `Importer ${parsed.length} actif${parsed.length !== 1 ? "s" : ""}`
+                  )}
                 </Button>
               )}
             </DialogFooter>

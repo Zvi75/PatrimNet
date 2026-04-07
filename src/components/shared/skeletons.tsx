@@ -18,7 +18,10 @@ export function EntityListSkeleton() {
   return (
     <div className="space-y-3">
       {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
+        <div
+          key={i}
+          className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4"
+        >
           <Skeleton className="h-10 w-10 rounded-lg" />
           <div className="flex-1 space-y-2">
             <Skeleton className="h-4 w-48" />
@@ -80,7 +83,10 @@ export function TableSkeleton({ rows = 8 }: { rows?: number }) {
         </div>
       </div>
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="grid grid-cols-5 gap-4 border-b border-slate-50 px-4 py-3 last:border-0">
+        <div
+          key={i}
+          className="grid grid-cols-5 gap-4 border-b border-slate-50 px-4 py-3 last:border-0"
+        >
           {Array.from({ length: 5 }).map((_, j) => (
             <Skeleton key={j} className="h-4 w-full" />
           ))}

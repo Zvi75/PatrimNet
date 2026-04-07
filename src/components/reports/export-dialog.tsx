@@ -2,11 +2,21 @@
 
 import { useState } from "react";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { FileDown, Loader2, FileText, FileSpreadsheet } from "lucide-react";
 import type { Asset, Lease, Loan } from "@/types";
@@ -47,11 +57,18 @@ const MIMES: Record<string, string> = {
 };
 
 export function ExportDialog({
-  reportType, reportTitle, open, onOpenChange, assets = [], leases = [], loans = [],
+  reportType,
+  reportTitle,
+  open,
+  onOpenChange,
+  assets = [],
+  leases = [],
+  loans = [],
 }: ExportDialogProps) {
   const currentYear = new Date().getFullYear();
   const firstOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-    .toISOString().slice(0, 10);
+    .toISOString()
+    .slice(0, 10);
   const today = new Date().toISOString().slice(0, 10);
 
   const [assetId, setAssetId] = useState<string>("");
@@ -85,7 +102,10 @@ export function ExportDialog({
       if (needsLease) params.leaseId = leaseId;
       if (needsLoan) params.loanId = loanId;
       if (needsYear) params.year = parseInt(year, 10);
-      if (needsDates) { params.dateFrom = dateFrom; params.dateTo = dateTo; }
+      if (needsDates) {
+        params.dateFrom = dateFrom;
+        params.dateTo = dateTo;
+      }
 
       const res = await fetch("/api/reports/generate", {
         method: "POST",
@@ -127,7 +147,9 @@ export function ExportDialog({
                 </SelectTrigger>
                 <SelectContent>
                   {assets.map((a) => (
-                    <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                    <SelectItem key={a.id} value={a.id}>
+                      {a.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -143,7 +165,9 @@ export function ExportDialog({
                 </SelectTrigger>
                 <SelectContent>
                   {leases.map((l) => (
-                    <SelectItem key={l.id} value={l.id}>{l.reference}</SelectItem>
+                    <SelectItem key={l.id} value={l.id}>
+                      {l.reference}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -159,7 +183,9 @@ export function ExportDialog({
                 </SelectTrigger>
                 <SelectContent>
                   {loans.map((l) => (
-                    <SelectItem key={l.id} value={l.id}>{l.reference} — {l.bank}</SelectItem>
+                    <SelectItem key={l.id} value={l.id}>
+                      {l.reference} — {l.bank}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -210,9 +236,7 @@ export function ExportDialog({
             <span className="ml-auto text-xs text-blue-600">3 fichiers simultanés</span>
           </div>
 
-          {error && (
-            <p className="text-xs text-red-600">{error}</p>
-          )}
+          {error && <p className="text-xs text-red-600">{error}</p>}
         </div>
 
         <DialogFooter>

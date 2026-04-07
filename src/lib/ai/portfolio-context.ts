@@ -32,7 +32,7 @@ export async function buildPortfolioContext(workspaceId: string): Promise<string
     leases.length > 0 ? ((activeLeases.length / leases.length) * 100).toFixed(1) : "N/A";
   const netYield =
     totalMarketValue > 0 && monthlyRentRoll > 0
-      ? ((monthlyRentRoll * 12 / totalMarketValue) * 100).toFixed(2)
+      ? (((monthlyRentRoll * 12) / totalMarketValue) * 100).toFixed(2)
       : "N/A";
 
   // Loans summary
@@ -57,13 +57,15 @@ export async function buildPortfolioContext(workspaceId: string): Promise<string
 
   const totalOutstandingDebt = loanSummaries.reduce((s, l) => s + l.outstanding, 0);
   const ltv =
-    totalMarketValue > 0
-      ? ((totalOutstandingDebt / totalMarketValue) * 100).toFixed(1)
-      : "N/A";
+    totalMarketValue > 0 ? ((totalOutstandingDebt / totalMarketValue) * 100).toFixed(1) : "N/A";
 
   // Transaction summary (last 3 months)
-  const txIn = recentTx.filter((t) => t.direction === "Encaissement").reduce((s, t) => s + t.amount, 0);
-  const txOut = recentTx.filter((t) => t.direction === "Décaissement").reduce((s, t) => s + t.amount, 0);
+  const txIn = recentTx
+    .filter((t) => t.direction === "Encaissement")
+    .reduce((s, t) => s + t.amount, 0);
+  const txOut = recentTx
+    .filter((t) => t.direction === "Décaissement")
+    .reduce((s, t) => s + t.amount, 0);
 
   // Expiring leases (next 90 days)
   const today = new Date().toISOString().slice(0, 10);
@@ -95,11 +97,13 @@ export async function buildPortfolioContext(workspaceId: string): Promise<string
     const assetRent = assetLeases.reduce((s, l) => s + l.baseRent + (l.charges ?? 0), 0);
     lines.push(
       `- ${asset.name} [${asset.type}, ${asset.status}] — Entité: ${entity}` +
-      (asset.surfaceM2 ? `, ${asset.surfaceM2}m²` : "") +
-      (asset.currentMarketValue ? `, valeur: ${formatCurrency(asset.currentMarketValue)}` : "") +
-      (asset.ownershipPercent && asset.ownershipPercent < 100 ? `, détention: ${asset.ownershipPercent}%` : "") +
-      (assetRent > 0 ? `, loyer: ${formatCurrency(assetRent)}/mois` : "") +
-      (asset.dpe ? `, DPE: ${asset.dpe}` : ""),
+        (asset.surfaceM2 ? `, ${asset.surfaceM2}m²` : "") +
+        (asset.currentMarketValue ? `, valeur: ${formatCurrency(asset.currentMarketValue)}` : "") +
+        (asset.ownershipPercent && asset.ownershipPercent < 100
+          ? `, détention: ${asset.ownershipPercent}%`
+          : "") +
+        (assetRent > 0 ? `, loyer: ${formatCurrency(assetRent)}/mois` : "") +
+        (asset.dpe ? `, DPE: ${asset.dpe}` : ""),
     );
   }
 
@@ -109,9 +113,11 @@ export async function buildPortfolioContext(workspaceId: string): Promise<string
     const tenantName = tenantMap.get(lease.tenantId) ?? "—";
     lines.push(
       `- ${lease.reference} — ${assetName} / ${tenantName} [${lease.type}] : ${formatCurrency(lease.baseRent)}/mois` +
-      (lease.charges ? ` + ${formatCurrency(lease.charges)} charges` : "") +
-      `, fin: ${lease.endDate}` +
-      (lease.indexationIndex && lease.indexationIndex !== "None" ? `, indexation: ${lease.indexationIndex}` : ""),
+        (lease.charges ? ` + ${formatCurrency(lease.charges)} charges` : "") +
+        `, fin: ${lease.endDate}` +
+        (lease.indexationIndex && lease.indexationIndex !== "None"
+          ? `, indexation: ${lease.indexationIndex}`
+          : ""),
     );
   }
 
@@ -129,12 +135,12 @@ export async function buildPortfolioContext(workspaceId: string): Promise<string
     const assetName = assets.find((a) => a.id === loan.assetId)?.name ?? "—";
     lines.push(
       `- ${loan.reference} — ${loan.bank}, actif: ${assetName}` +
-      `, capital initial: ${formatCurrency(loan.initialAmount)}` +
-      `, taux: ${loan.interestRate}%` +
-      `, mensualité: ${formatCurrency(loan.monthlyPayment)}` +
-      `, restant: ${formatCurrency(loan.outstanding)}` +
-      `, fin: ${loan.endDate}` +
-      (loan.dscr !== null ? `, DSCR: ${loan.dscr.toFixed(2)}` : ""),
+        `, capital initial: ${formatCurrency(loan.initialAmount)}` +
+        `, taux: ${loan.interestRate}%` +
+        `, mensualité: ${formatCurrency(loan.monthlyPayment)}` +
+        `, restant: ${formatCurrency(loan.outstanding)}` +
+        `, fin: ${loan.endDate}` +
+        (loan.dscr !== null ? `, DSCR: ${loan.dscr.toFixed(2)}` : ""),
     );
   }
 
@@ -143,8 +149,8 @@ export async function buildPortfolioContext(workspaceId: string): Promise<string
     const assetCount = assets.filter((a) => a.legalEntityId === entity.id).length;
     lines.push(
       `- ${entity.name} [${entity.type}]` +
-      (entity.taxRegime ? `, régime: ${entity.taxRegime}` : "") +
-      ` — ${assetCount} actif${assetCount !== 1 ? "s" : ""}`,
+        (entity.taxRegime ? `, régime: ${entity.taxRegime}` : "") +
+        ` — ${assetCount} actif${assetCount !== 1 ? "s" : ""}`,
     );
   }
 

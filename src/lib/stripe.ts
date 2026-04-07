@@ -1,7 +1,21 @@
 import Stripe from "stripe";
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-02-24.acacia",
+// Lazy singleton — avoids throwing at build time when env vars are not set
+let _instance: Stripe | undefined;
+
+function getStripeInstance(): Stripe {
+  if (!_instance) {
+    _instance = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2025-02-24.acacia",
+    });
+  }
+  return _instance;
+}
+
+export const stripe = new Proxy({} as Stripe, {
+  get(_, prop) {
+    return Reflect.get(getStripeInstance(), prop);
+  },
 });
 
 // Map plan IDs to Stripe monthly price IDs (set in .env)

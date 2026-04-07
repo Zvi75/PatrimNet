@@ -5,20 +5,31 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ENTITY_TYPES, TAX_REGIMES } from "@/lib/constants";
 import type { LegalEntity, EntityType } from "@/types";
 
 interface EntityFormDialogProps {
   entities: LegalEntity[];
-  entity?: LegalEntity | null;        // null/undefined = create mode
-  parentEntityId?: string;            // pre-set parent when adding child
+  entity?: LegalEntity | null; // null/undefined = create mode
+  parentEntityId?: string; // pre-set parent when adding child
   trigger: React.ReactNode;
   defaultOpen?: boolean;
   onClose?: () => void;
@@ -91,8 +102,16 @@ export function EntityFormDialog({
   );
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); else setOpen(true); }}>
-      <DialogTrigger asChild onClick={() => setOpen(true)}>{trigger}</DialogTrigger>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) handleClose();
+        else setOpen(true);
+      }}
+    >
+      <DialogTrigger asChild onClick={() => setOpen(true)}>
+        {trigger}
+      </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Modifier l'entité" : "Nouvelle entité juridique"}</DialogTitle>
@@ -113,11 +132,18 @@ export function EntityFormDialog({
 
             <div className="space-y-2">
               <Label>Type *</Label>
-              <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v as EntityType })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={form.type}
+                onValueChange={(v) => setForm({ ...form, type: v as EntityType })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {ENTITY_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -140,11 +166,15 @@ export function EntityFormDialog({
                 value={form.parentEntityId || "none"}
                 onValueChange={(v) => setForm({ ...form, parentEntityId: v === "none" ? "" : v })}
               >
-                <SelectTrigger><SelectValue placeholder="Aucune (racine)" /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Aucune (racine)" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Aucune (racine)</SelectItem>
                   {parentOptions.map((e) => (
-                    <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
+                    <SelectItem key={e.id} value={e.id}>
+                      {e.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -156,11 +186,15 @@ export function EntityFormDialog({
                 value={form.taxRegime || "none"}
                 onValueChange={(v) => setForm({ ...form, taxRegime: v === "none" ? "" : v })}
               >
-                <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">—</SelectItem>
                   {TAX_REGIMES.map((r) => (
-                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                    <SelectItem key={r} value={r}>
+                      {r}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -189,9 +223,17 @@ export function EntityFormDialog({
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose}>Annuler</Button>
+            <Button type="button" variant="outline" onClick={handleClose}>
+              Annuler
+            </Button>
             <Button type="submit" disabled={loading || !form.name.trim()}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : isEdit ? "Enregistrer" : "Créer"}
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : isEdit ? (
+                "Enregistrer"
+              ) : (
+                "Créer"
+              )}
             </Button>
           </DialogFooter>
         </form>

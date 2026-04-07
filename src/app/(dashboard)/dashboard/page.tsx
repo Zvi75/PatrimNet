@@ -33,16 +33,18 @@ export default async function DashboardPage() {
 
   // Total outstanding debt from loans
   const totalOutstandingDebt = loans.reduce((s, loan) => {
-    const outstanding = loan.outstandingCapital ?? estimateOutstandingCapital(
-      generateAmortizationSchedule({
-        loanId: loan.id,
-        initialAmount: loan.initialAmount,
-        annualInterestRate: loan.interestRate,
-        monthlyPayment: loan.monthlyPayment,
-        startDate: loan.startDate,
-        endDate: loan.endDate,
-      }),
-    );
+    const outstanding =
+      loan.outstandingCapital ??
+      estimateOutstandingCapital(
+        generateAmortizationSchedule({
+          loanId: loan.id,
+          initialAmount: loan.initialAmount,
+          annualInterestRate: loan.interestRate,
+          monthlyPayment: loan.monthlyPayment,
+          startDate: loan.startDate,
+          endDate: loan.endDate,
+        }),
+      );
     return s + outstanding;
   }, 0);
 
@@ -51,9 +53,10 @@ export default async function DashboardPage() {
   const monthlyRentRoll = activeLeases.reduce((s, l) => s + l.baseRent + (l.charges ?? 0), 0);
   const totalMarketValue = assets.reduce((s, a) => s + (a.currentMarketValue ?? 0), 0);
   const occupancyRate = leases.length > 0 ? (activeLeases.length / leases.length) * 100 : 0;
-  const netYield = totalMarketValue > 0 && monthlyRentRoll > 0
-    ? (monthlyRentRoll * 12 / totalMarketValue) * 100
-    : null;
+  const netYield =
+    totalMarketValue > 0 && monthlyRentRoll > 0
+      ? ((monthlyRentRoll * 12) / totalMarketValue) * 100
+      : null;
 
   // Occupancy breakdown by asset status
   const occupancyData = ASSET_STATUSES.map((status) => ({

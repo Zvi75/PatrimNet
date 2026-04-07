@@ -60,10 +60,7 @@ export async function POST(req: Request) {
         const enc = new TextEncoder();
         try {
           for await (const chunk of stream) {
-            if (
-              chunk.type === "content_block_delta" &&
-              chunk.delta.type === "text_delta"
-            ) {
+            if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
               controller.enqueue(enc.encode(chunk.delta.text));
             }
           }

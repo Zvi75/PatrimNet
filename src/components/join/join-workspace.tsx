@@ -94,7 +94,7 @@ export function JoinWorkspace({ token }: { token?: string }) {
 
   if (error) {
     return (
-      <Card className="shadow-2xl border-red-200">
+      <Card className="border-red-200 shadow-2xl">
         <CardContent className="flex flex-col items-center gap-4 py-12">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
             <AlertCircle className="h-7 w-7 text-red-500" />
@@ -150,16 +150,10 @@ export function JoinWorkspace({ token }: { token?: string }) {
             <p className="text-sm text-slate-600">
               Connectez-vous ou créez un compte pour accepter l'invitation.
             </p>
-            <SignUpButton
-              mode="redirect"
-              forceRedirectUrl={`/join?token=${token}`}
-            >
+            <SignUpButton mode="redirect" forceRedirectUrl={`/join?token=${token}`}>
               <Button className="w-full">Créer un compte</Button>
             </SignUpButton>
-            <SignInButton
-              mode="redirect"
-              forceRedirectUrl={`/join?token=${token}`}
-            >
+            <SignInButton mode="redirect" forceRedirectUrl={`/join?token=${token}`}>
               <Button variant="outline" className="w-full">
                 J'ai déjà un compte
               </Button>

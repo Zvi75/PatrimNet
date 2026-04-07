@@ -23,12 +23,11 @@ export default async function LoansPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Emprunts & Amortissement</h1>
           <p className="mt-1 text-sm text-slate-500">
-            {loans.length} emprunt{loans.length !== 1 ? "s" : ""} · Suivi des financements, tableaux d'amortissement, DSCR
+            {loans.length} emprunt{loans.length !== 1 ? "s" : ""} · Suivi des financements, tableaux
+            d'amortissement, DSCR
           </p>
         </div>
-        {ctx.role !== "read-only" && (
-          <CreateLoanButton assets={assets} entities={entities} />
-        )}
+        {ctx.role !== "read-only" && <CreateLoanButton assets={assets} entities={entities} />}
       </div>
       <LoanListView
         loans={loans}

@@ -1,6 +1,10 @@
 import type {
-  PortfolioReportData, AssetReportData, CashFlowReportData,
-  FiscalReportData, LoanPlanData, TenantReportData,
+  PortfolioReportData,
+  AssetReportData,
+  CashFlowReportData,
+  FiscalReportData,
+  LoanPlanData,
+  TenantReportData,
 } from "./data";
 import { formatCurrency, formatDate, formatPercent } from "@/lib/utils";
 import { generateAmortizationSchedule, estimateOutstandingCapital } from "@/lib/amortization";
@@ -37,10 +41,13 @@ function htmlDoc(title: string, body: string): string {
 
 function statusBadge(status: string): string {
   const cls =
-    status === "Occupé" || status === "Actif" ? "badge-green" :
-    status === "Vacant" || status === "Résilié" || status === "Expiré" ? "badge-red" :
-    status === "En travaux" || status === "En cours de renouvellement" ? "badge-yellow" :
-    "badge-gray";
+    status === "Occupé" || status === "Actif"
+      ? "badge-green"
+      : status === "Vacant" || status === "Résilié" || status === "Expiré"
+        ? "badge-red"
+        : status === "En travaux" || status === "En cours de renouvellement"
+          ? "badge-yellow"
+          : "badge-gray";
   return `<span class="badge ${cls}">${status}</span>`;
 }
 
@@ -49,15 +56,27 @@ export function buildPortfolioHTML(d: PortfolioReportData): string {
   const monthlyRent = activeLeases.reduce((s, l) => s + l.baseRent + (l.charges ?? 0), 0);
   const totalValue = d.assets.reduce((s, a) => s + (a.currentMarketValue ?? 0), 0);
   const totalDebt = d.loans.reduce((s, loan) => {
-    const outstanding = loan.outstandingCapital ?? estimateOutstandingCapital(
-      generateAmortizationSchedule({ loanId: loan.id, initialAmount: loan.initialAmount, annualInterestRate: loan.interestRate, monthlyPayment: loan.monthlyPayment, startDate: loan.startDate, endDate: loan.endDate }),
-    );
+    const outstanding =
+      loan.outstandingCapital ??
+      estimateOutstandingCapital(
+        generateAmortizationSchedule({
+          loanId: loan.id,
+          initialAmount: loan.initialAmount,
+          annualInterestRate: loan.interestRate,
+          monthlyPayment: loan.monthlyPayment,
+          startDate: loan.startDate,
+          endDate: loan.endDate,
+        }),
+      );
     return s + outstanding;
   }, 0);
-  const occupancy = d.leases.length > 0 ? ((activeLeases.length / d.leases.length) * 100).toFixed(1) : "—";
-  const netYield = totalValue > 0 ? ((monthlyRent * 12 / totalValue) * 100).toFixed(2) : "—";
+  const occupancy =
+    d.leases.length > 0 ? ((activeLeases.length / d.leases.length) * 100).toFixed(1) : "—";
+  const netYield = totalValue > 0 ? (((monthlyRent * 12) / totalValue) * 100).toFixed(2) : "—";
 
-  const assetsRows = d.assets.map((a) => `
+  const assetsRows = d.assets
+    .map(
+      (a) => `
     <tr>
       <td><strong>${a.name}</strong></td>
       <td>${a.type}</td>
@@ -67,9 +86,13 @@ export function buildPortfolioHTML(d: PortfolioReportData): string {
       <td>${a.acquisitionPrice ? formatCurrency(a.acquisitionPrice) : "—"}</td>
       <td>${a.currentMarketValue ? formatCurrency(a.currentMarketValue) : "—"}</td>
       <td>${a.dpe ?? "—"}</td>
-    </tr>`).join("");
+    </tr>`,
+    )
+    .join("");
 
-  const leasesRows = activeLeases.map((l) => `
+  const leasesRows = activeLeases
+    .map(
+      (l) => `
     <tr>
       <td>${l.reference}</td>
       <td>${d.assetMap.get(l.assetId) ?? "—"}</td>
@@ -77,13 +100,25 @@ export function buildPortfolioHTML(d: PortfolioReportData): string {
       <td>${l.type}</td>
       <td>${formatCurrency(l.baseRent)}</td>
       <td>${formatDate(l.endDate)}</td>
-    </tr>`).join("");
+    </tr>`,
+    )
+    .join("");
 
-  const loansRows = d.loans.map((loan) => {
-    const outstanding = loan.outstandingCapital ?? estimateOutstandingCapital(
-      generateAmortizationSchedule({ loanId: loan.id, initialAmount: loan.initialAmount, annualInterestRate: loan.interestRate, monthlyPayment: loan.monthlyPayment, startDate: loan.startDate, endDate: loan.endDate }),
-    );
-    return `<tr>
+  const loansRows = d.loans
+    .map((loan) => {
+      const outstanding =
+        loan.outstandingCapital ??
+        estimateOutstandingCapital(
+          generateAmortizationSchedule({
+            loanId: loan.id,
+            initialAmount: loan.initialAmount,
+            annualInterestRate: loan.interestRate,
+            monthlyPayment: loan.monthlyPayment,
+            startDate: loan.startDate,
+            endDate: loan.endDate,
+          }),
+        );
+      return `<tr>
       <td>${loan.reference}</td>
       <td>${d.assetMap.get(loan.assetId) ?? "—"}</td>
       <td>${loan.bank}</td>
@@ -93,9 +128,12 @@ export function buildPortfolioHTML(d: PortfolioReportData): string {
       <td>${formatCurrency(outstanding)}</td>
       <td>${formatDate(loan.endDate)}</td>
     </tr>`;
-  }).join("");
+    })
+    .join("");
 
-  return htmlDoc("Rapport de portefeuille", `
+  return htmlDoc(
+    "Rapport de portefeuille",
+    `
     <h1>Rapport de portefeuille</h1>
     <div class="meta">Généré le ${d.generatedAt}</div>
     <div class="kpis">
@@ -114,38 +152,63 @@ export function buildPortfolioHTML(d: PortfolioReportData): string {
     <table><thead><tr><th>Référence</th><th>Actif</th><th>Locataire</th><th>Type</th><th>Loyer/mois</th><th>Échéance</th></tr></thead><tbody>${leasesRows}</tbody></table>
     <h2>Emprunts (${d.loans.length})</h2>
     <table><thead><tr><th>Référence</th><th>Actif</th><th>Banque</th><th>Capital initial</th><th>Taux</th><th>Mensualité</th><th>Restant dû</th><th>Fin</th></tr></thead><tbody>${loansRows}</tbody></table>
-  `);
+  `,
+  );
 }
 
 export function buildAssetHTML(d: AssetReportData): string {
   const activeLeases = d.assetLeases.filter((l) => l.status === "Actif");
   const monthlyRent = activeLeases.reduce((s, l) => s + l.baseRent + (l.charges ?? 0), 0);
   const totalDebt = d.assetLoans.reduce((s, loan) => {
-    const outstanding = loan.outstandingCapital ?? estimateOutstandingCapital(
-      generateAmortizationSchedule({ loanId: loan.id, initialAmount: loan.initialAmount, annualInterestRate: loan.interestRate, monthlyPayment: loan.monthlyPayment, startDate: loan.startDate, endDate: loan.endDate }),
-    );
+    const outstanding =
+      loan.outstandingCapital ??
+      estimateOutstandingCapital(
+        generateAmortizationSchedule({
+          loanId: loan.id,
+          initialAmount: loan.initialAmount,
+          annualInterestRate: loan.interestRate,
+          monthlyPayment: loan.monthlyPayment,
+          startDate: loan.startDate,
+          endDate: loan.endDate,
+        }),
+      );
     return s + outstanding;
   }, 0);
   const annualDebt = d.assetLoans.reduce((s, l) => s + l.monthlyPayment * 12, 0);
   const dscr = annualDebt > 0 ? (monthlyRent * 12) / annualDebt : null;
-  const netYield = d.asset.currentMarketValue && monthlyRent > 0
-    ? ((monthlyRent * 12 / d.asset.currentMarketValue) * 100).toFixed(2)
-    : null;
+  const netYield =
+    d.asset.currentMarketValue && monthlyRent > 0
+      ? (((monthlyRent * 12) / d.asset.currentMarketValue) * 100).toFixed(2)
+      : null;
 
-  const leasesRows = d.assetLeases.map((l) => `<tr>
+  const leasesRows = d.assetLeases
+    .map(
+      (l) => `<tr>
     <td>${l.reference}</td>
     <td>${d.tenantMap.get(l.tenantId) ?? "—"}</td>
     <td>${l.type}</td>
     <td>${statusBadge(l.status)}</td>
     <td>${formatCurrency(l.baseRent)}${l.charges ? ` + ${formatCurrency(l.charges)}` : ""}</td>
     <td>${formatDate(l.startDate)} → ${formatDate(l.endDate)}</td>
-  </tr>`).join("");
+  </tr>`,
+    )
+    .join("");
 
-  const loansRows = d.assetLoans.map((loan) => {
-    const outstanding = loan.outstandingCapital ?? estimateOutstandingCapital(
-      generateAmortizationSchedule({ loanId: loan.id, initialAmount: loan.initialAmount, annualInterestRate: loan.interestRate, monthlyPayment: loan.monthlyPayment, startDate: loan.startDate, endDate: loan.endDate }),
-    );
-    return `<tr>
+  const loansRows = d.assetLoans
+    .map((loan) => {
+      const outstanding =
+        loan.outstandingCapital ??
+        estimateOutstandingCapital(
+          generateAmortizationSchedule({
+            loanId: loan.id,
+            initialAmount: loan.initialAmount,
+            annualInterestRate: loan.interestRate,
+            monthlyPayment: loan.monthlyPayment,
+            startDate: loan.startDate,
+            endDate: loan.endDate,
+          }),
+        );
+      return `<tr>
       <td>${loan.reference}</td>
       <td>${loan.bank}</td>
       <td>${formatCurrency(loan.initialAmount)}</td>
@@ -153,9 +216,12 @@ export function buildAssetHTML(d: AssetReportData): string {
       <td>${formatCurrency(loan.monthlyPayment)}</td>
       <td>${formatCurrency(outstanding)}</td>
     </tr>`;
-  }).join("");
+    })
+    .join("");
 
-  return htmlDoc(`Fiche actif — ${d.asset.name}`, `
+  return htmlDoc(
+    `Fiche actif — ${d.asset.name}`,
+    `
     <h1>Fiche actif — ${d.asset.name}</h1>
     <div class="meta">${d.asset.address} · Généré le ${d.generatedAt}</div>
     <div class="kpis">
@@ -180,24 +246,35 @@ export function buildAssetHTML(d: AssetReportData): string {
     <h2>Emprunts (${d.assetLoans.length})</h2>
     <table><thead><tr><th>Référence</th><th>Banque</th><th>Capital initial</th><th>Taux</th><th>Mensualité</th><th>Restant dû</th></tr></thead><tbody>${loansRows || "<tr><td colspan='6'>Aucun emprunt</td></tr>"}</tbody></table>
     ${d.asset.notes ? `<h2>Notes</h2><p style="white-space:pre-wrap;font-size:10px;">${d.asset.notes}</p>` : ""}
-  `);
+  `,
+  );
 }
 
 export function buildCashFlowHTML(d: CashFlowReportData): string {
-  const txIn = d.transactions.filter((t) => t.direction === "Encaissement").reduce((s, t) => s + t.amount, 0);
-  const txOut = d.transactions.filter((t) => t.direction === "Décaissement").reduce((s, t) => s + t.amount, 0);
+  const txIn = d.transactions
+    .filter((t) => t.direction === "Encaissement")
+    .reduce((s, t) => s + t.amount, 0);
+  const txOut = d.transactions
+    .filter((t) => t.direction === "Décaissement")
+    .reduce((s, t) => s + t.amount, 0);
   const net = txIn - txOut;
 
-  const rows = d.transactions.map((tx) => `<tr>
+  const rows = d.transactions
+    .map(
+      (tx) => `<tr>
     <td>${formatDate(tx.date)}</td>
     <td>${tx.label}</td>
     <td>${tx.type}</td>
     <td>${d.assetMap.get(tx.assetId ?? "") ?? "—"}</td>
     <td class="${tx.direction === "Encaissement" ? "positive" : "negative"}">${tx.direction === "Encaissement" ? "+" : "-"}${formatCurrency(tx.amount)}</td>
     <td>${tx.reconciled ? "✓" : "⏳"}</td>
-  </tr>`).join("");
+  </tr>`,
+    )
+    .join("");
 
-  return htmlDoc("Flux mensuel", `
+  return htmlDoc(
+    "Flux mensuel",
+    `
     <h1>Tableau de flux</h1>
     <div class="meta">Période : ${formatDate(d.dateFrom)} → ${formatDate(d.dateTo)} · Généré le ${d.generatedAt}</div>
     <div class="kpis">
@@ -208,18 +285,26 @@ export function buildCashFlowHTML(d: CashFlowReportData): string {
     </div>
     <h2>Transactions (${d.transactions.length})</h2>
     <table><thead><tr><th>Date</th><th>Libellé</th><th>Type</th><th>Actif</th><th>Montant</th><th>Réconcilié</th></tr></thead><tbody>${rows || "<tr><td colspan='6'>Aucune transaction sur la période</td></tr>"}</tbody></table>
-  `);
+  `,
+  );
 }
 
 export function buildFiscalHTML(d: FiscalReportData): string {
-  const rows = d.entities.map((entity) => {
-    const entityTx = d.transactions.filter((t) => t.legalEntityId === entity.id);
-    const revenues = entityTx.filter((t) => t.direction === "Encaissement").reduce((s, t) => s + t.amount, 0);
-    const expenses = entityTx.filter((t) => t.direction === "Décaissement").reduce((s, t) => s + t.amount, 0);
-    const entityAssets = d.assets.filter((a) => a.legalEntityId === entity.id);
-    const entityLeases = d.leases.filter((l) => entityAssets.some((a) => a.id === l.assetId) && l.status === "Actif");
-    const rentRoll = entityLeases.reduce((s, l) => s + l.baseRent + (l.charges ?? 0), 0);
-    return `<tr>
+  const rows = d.entities
+    .map((entity) => {
+      const entityTx = d.transactions.filter((t) => t.legalEntityId === entity.id);
+      const revenues = entityTx
+        .filter((t) => t.direction === "Encaissement")
+        .reduce((s, t) => s + t.amount, 0);
+      const expenses = entityTx
+        .filter((t) => t.direction === "Décaissement")
+        .reduce((s, t) => s + t.amount, 0);
+      const entityAssets = d.assets.filter((a) => a.legalEntityId === entity.id);
+      const entityLeases = d.leases.filter(
+        (l) => entityAssets.some((a) => a.id === l.assetId) && l.status === "Actif",
+      );
+      const rentRoll = entityLeases.reduce((s, l) => s + l.baseRent + (l.charges ?? 0), 0);
+      return `<tr>
       <td><strong>${entity.name}</strong></td>
       <td>${entity.type}</td>
       <td>${entity.taxRegime ?? "—"}</td>
@@ -229,12 +314,19 @@ export function buildFiscalHTML(d: FiscalReportData): string {
       <td class="${revenues - expenses >= 0 ? "positive" : "negative"}">${revenues - expenses >= 0 ? "+" : ""}${formatCurrency(revenues - expenses)}</td>
       <td>${formatCurrency(rentRoll * 12)}</td>
     </tr>`;
-  }).join("");
+    })
+    .join("");
 
-  const totalRevenues = d.transactions.filter((t) => t.direction === "Encaissement").reduce((s, t) => s + t.amount, 0);
-  const totalExpenses = d.transactions.filter((t) => t.direction === "Décaissement").reduce((s, t) => s + t.amount, 0);
+  const totalRevenues = d.transactions
+    .filter((t) => t.direction === "Encaissement")
+    .reduce((s, t) => s + t.amount, 0);
+  const totalExpenses = d.transactions
+    .filter((t) => t.direction === "Décaissement")
+    .reduce((s, t) => s + t.amount, 0);
 
-  return htmlDoc(`Synthèse fiscale ${d.year}`, `
+  return htmlDoc(
+    `Synthèse fiscale ${d.year}`,
+    `
     <h1>Synthèse fiscale ${d.year}</h1>
     <div class="meta">Généré le ${d.generatedAt}</div>
     <div class="kpis">
@@ -245,7 +337,8 @@ export function buildFiscalHTML(d: FiscalReportData): string {
     </div>
     <h2>Détail par entité juridique</h2>
     <table><thead><tr><th>Entité</th><th>Type</th><th>Régime</th><th>Actifs</th><th>Encaissements</th><th>Décaissements</th><th>Net</th><th>Loyer annuel</th></tr></thead><tbody>${rows || "<tr><td colspan='8'>Aucune entité</td></tr>"}</tbody></table>
-  `);
+  `,
+  );
 }
 
 export function buildLoanPlanHTML(d: LoanPlanData): string {
@@ -255,7 +348,9 @@ export function buildLoanPlanHTML(d: LoanPlanData): string {
   const totalInterest = d.schedule.reduce((s, l) => s + l.interestPayment, 0);
   const totalInsurance = d.schedule.reduce((s, l) => s + (l.insurancePayment ?? 0), 0);
 
-  const scheduleRows = d.schedule.map((line, i) => `
+  const scheduleRows = d.schedule
+    .map(
+      (line, i) => `
     <tr class="${i === currentIdx ? "current-row" : ""}">
       <td>${formatDate(line.periodDate)}${i === currentIdx ? " ◀" : ""}</td>
       <td class="positive">${formatCurrency(line.capitalPayment)}</td>
@@ -263,9 +358,13 @@ export function buildLoanPlanHTML(d: LoanPlanData): string {
       <td>${line.insurancePayment ? formatCurrency(line.insurancePayment) : "—"}</td>
       <td><strong>${formatCurrency(line.totalPayment)}</strong></td>
       <td>${formatCurrency(line.remainingCapital)}</td>
-    </tr>`).join("");
+    </tr>`,
+    )
+    .join("");
 
-  return htmlDoc(`Plan de financement — ${d.loan.reference}`, `
+  return htmlDoc(
+    `Plan de financement — ${d.loan.reference}`,
+    `
     <h1>Plan de financement — ${d.loan.reference}</h1>
     <div class="meta">${d.loan.bank} · Actif : ${d.asset?.name ?? "—"} · Généré le ${d.generatedAt} · ${d.loan.parsed ? "Tableau parsé depuis PDF" : "Tableau théorique"}</div>
     <div class="kpis">
@@ -280,20 +379,29 @@ export function buildLoanPlanHTML(d: LoanPlanData): string {
     </div>
     <h2>Tableau d'amortissement (${d.schedule.length} lignes)</h2>
     <table><thead><tr><th>Période</th><th>Capital</th><th>Intérêts</th><th>Assurance</th><th>Total</th><th>Restant dû</th></tr></thead><tbody>${scheduleRows}</tbody></table>
-  `);
+  `,
+  );
 }
 
 export function buildTenantReportHTML(d: TenantReportData): string {
-  const txIn = d.transactions.filter((t) => t.direction === "Encaissement").reduce((s, t) => s + t.amount, 0);
-  const txRows = d.transactions.map((tx) => `<tr>
+  const txIn = d.transactions
+    .filter((t) => t.direction === "Encaissement")
+    .reduce((s, t) => s + t.amount, 0);
+  const txRows = d.transactions
+    .map(
+      (tx) => `<tr>
     <td>${formatDate(tx.date)}</td>
     <td>${tx.label}</td>
     <td>${tx.type}</td>
     <td class="${tx.direction === "Encaissement" ? "positive" : "negative"}">${tx.direction === "Encaissement" ? "+" : "-"}${formatCurrency(tx.amount)}</td>
     <td>${tx.reconciled ? "✓ Réconcilié" : "⏳ En attente"}</td>
-  </tr>`).join("");
+  </tr>`,
+    )
+    .join("");
 
-  return htmlDoc(`Rapport locataire — ${d.tenant?.name ?? d.lease.reference}`, `
+  return htmlDoc(
+    `Rapport locataire — ${d.tenant?.name ?? d.lease.reference}`,
+    `
     <h1>Rapport locataire — ${d.tenant?.name ?? "—"}</h1>
     <div class="meta">Bail ${d.lease.reference} · Actif : ${d.asset?.name ?? "—"} · Généré le ${d.generatedAt}</div>
     <div class="kpis">
@@ -318,5 +426,6 @@ export function buildTenantReportHTML(d: TenantReportData): string {
     </tbody></table>
     <h2>Historique de paiement (${d.transactions.length} transactions · Total encaissé : ${formatCurrency(txIn)})</h2>
     <table><thead><tr><th>Date</th><th>Libellé</th><th>Type</th><th>Montant</th><th>Statut</th></tr></thead><tbody>${txRows || "<tr><td colspan='5'>Aucune transaction</td></tr>"}</tbody></table>
-  `);
+  `,
+  );
 }

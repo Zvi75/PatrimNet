@@ -129,7 +129,9 @@ export async function POST(req: Request) {
       }
 
       case "flux-mensuel": {
-        const dateFrom = params.dateFrom ?? new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10);
+        const dateFrom =
+          params.dateFrom ??
+          new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10);
         const dateTo = params.dateTo ?? new Date().toISOString().slice(0, 10);
         const d = await buildCashFlowData(wid, dateFrom, dateTo);
         [pdfBuffer, docxBuffer, xlsxBuffer] = await Promise.all([

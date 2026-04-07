@@ -62,9 +62,13 @@ export async function createLease(data: {
       Status: { select: { name: data.status ?? "Actif" } },
       "Workspace ID": { rich_text: [{ text: { content: data.workspaceId } }] },
       "TVA applicable": { checkbox: data.tvaApplicable ?? false },
-      ...(data.nextRevisionDate && { "Next Revision Date": { date: { start: data.nextRevisionDate } } }),
+      ...(data.nextRevisionDate && {
+        "Next Revision Date": { date: { start: data.nextRevisionDate } },
+      }),
       ...(data.charges !== undefined && { "Charges €": { number: data.charges } }),
-      ...(data.indexationIndex && { "Indexation Index": { select: { name: data.indexationIndex } } }),
+      ...(data.indexationIndex && {
+        "Indexation Index": { select: { name: data.indexationIndex } },
+      }),
     },
   });
   return pageToLease(page as NotionPage);
@@ -100,7 +104,11 @@ export async function listLeasesByAsset(assetId: string): Promise<Lease[]> {
 export async function getExpiringLeases(workspaceId: string, days: number): Promise<Lease[]> {
   const leases = await listLeases(workspaceId);
   return leases.filter(
-    (l) => l.status === "Actif" && l.endDate && daysUntil(l.endDate) <= days && daysUntil(l.endDate) >= 0,
+    (l) =>
+      l.status === "Actif" &&
+      l.endDate &&
+      daysUntil(l.endDate) <= days &&
+      daysUntil(l.endDate) >= 0,
   );
 }
 
@@ -130,11 +138,17 @@ export async function updateLease(
       ...(data.type && { Type: { select: { name: data.type } } }),
       ...(data.startDate && { "Start Date": { date: { start: data.startDate } } }),
       ...(data.endDate && { "End Date": { date: { start: data.endDate } } }),
-      ...(data.nextRevisionDate && { "Next Revision Date": { date: { start: data.nextRevisionDate } } }),
+      ...(data.nextRevisionDate && {
+        "Next Revision Date": { date: { start: data.nextRevisionDate } },
+      }),
       ...(data.baseRent !== undefined && { "Base Rent €": { number: data.baseRent } }),
       ...(data.charges !== undefined && { "Charges €": { number: data.charges } }),
-      ...(data.tvaApplicable !== undefined && { "TVA applicable": { checkbox: data.tvaApplicable } }),
-      ...(data.indexationIndex && { "Indexation Index": { select: { name: data.indexationIndex } } }),
+      ...(data.tvaApplicable !== undefined && {
+        "TVA applicable": { checkbox: data.tvaApplicable },
+      }),
+      ...(data.indexationIndex && {
+        "Indexation Index": { select: { name: data.indexationIndex } },
+      }),
       ...(data.status && { Status: { select: { name: data.status } } }),
     },
   });
@@ -147,7 +161,5 @@ export async function deleteLease(id: string): Promise<void> {
 /** Total rent roll for a workspace (sum of base rent on active leases) */
 export async function getRentRoll(workspaceId: string): Promise<number> {
   const leases = await listLeases(workspaceId);
-  return leases
-    .filter((l) => l.status === "Actif")
-    .reduce((sum, l) => sum + l.baseRent, 0);
+  return leases.filter((l) => l.status === "Actif").reduce((sum, l) => sum + l.baseRent, 0);
 }

@@ -8,7 +8,10 @@
       "Bash(node:*)",
       "Bash(ls /Users/admin/patrimnet/.env*)",
       "Bash(npm audit:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm run:*)"
     ]
   }
 }

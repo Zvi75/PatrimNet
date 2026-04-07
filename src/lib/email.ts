@@ -1,6 +1,14 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy singleton — avoids throwing at build time when RESEND_API_KEY is not set
+let _resend: Resend | undefined;
+
+function getResend(): Resend {
+  if (!_resend) {
+    _resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return _resend;
+}
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -13,7 +21,7 @@ export async function sendInvitationEmail(data: {
 }): Promise<void> {
   const joinUrl = `${APP_URL}/join?token=${data.token}`;
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: "PatrimNet <noreply@patrimnet.fr>",
     to: data.to,
     subject: `Invitation à rejoindre ${data.workspaceName} sur PatrimNet`,
@@ -59,7 +67,7 @@ export async function sendLeaseExpiryAlert(data: {
   expiryDate: string;
   daysRemaining: number;
 }): Promise<void> {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: "PatrimNet <alertes@patrimnet.fr>",
     to: data.to,
     subject: `Alerte échéance — ${data.assetName} expire dans ${data.daysRemaining} jours`,

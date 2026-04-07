@@ -65,7 +65,7 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-screen w-64 flex-shrink-0 flex-col overflow-y-auto bg-sidebar scrollbar-hide">
+    <aside className="scrollbar-hide flex h-screen w-64 flex-shrink-0 flex-col overflow-y-auto bg-sidebar">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2.5 border-b border-sidebar-border px-5">
         <Building2 className="h-6 w-6 text-sidebar-primary" />

@@ -3,20 +3,17 @@ import { z } from "zod";
 import { getApiContext } from "@/lib/auth";
 import { getWorkspaceById } from "@/lib/notion/workspaces";
 import { getLoanById, updateLoan } from "@/lib/notion/loans";
-import { deleteAmortizationLines, bulkCreateAmortizationLines } from "@/lib/notion/amortization-lines";
+import {
+  deleteAmortizationLines,
+  bulkCreateAmortizationLines,
+} from "@/lib/notion/amortization-lines";
 import { requireFeature } from "@/lib/feature-gate";
 import { anthropic, AI_MODEL } from "@/lib/ai/client";
 
 const schema = z.object({
   loanId: z.string().min(1),
   fileBase64: z.string().min(1), // base64-encoded PDF or image
-  mediaType: z.enum([
-    "application/pdf",
-    "image/png",
-    "image/jpeg",
-    "image/webp",
-    "image/gif",
-  ]),
+  mediaType: z.enum(["application/pdf", "image/png", "image/jpeg", "image/webp", "image/gif"]),
 });
 
 const PARSE_PROMPT = `Analyse ce tableau d'amortissement et extrait TOUTES les lignes.
@@ -41,12 +38,10 @@ Règles :
 export async function POST(req: Request) {
   try {
     const ctx = await getApiContext();
-    if (ctx.role === "read-only")
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (ctx.role === "read-only") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const workspace = await getWorkspaceById(ctx.workspaceId);
-    if (!workspace)
-      return NextResponse.json({ error: "Workspace not found" }, { status: 404 });
+    if (!workspace) return NextResponse.json({ error: "Workspace not found" }, { status: 404 });
     requireFeature(workspace.plan.toUpperCase() as never, "ai");
 
     const body = await req.json();
@@ -77,10 +72,7 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "user",
-          content: [
-            contentBlock,
-            { type: "text", text: PARSE_PROMPT },
-          ],
+          content: [contentBlock, { type: "text", text: PARSE_PROMPT }],
         },
       ],
     });
@@ -88,7 +80,10 @@ export async function POST(req: Request) {
     const raw = response.content[0].type === "text" ? response.content[0].text : "";
 
     // Parse JSON — strip any markdown fences if present
-    const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+    const jsonText = raw
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
     let rows: {
       periodDate: string;
       capitalPayment: number;

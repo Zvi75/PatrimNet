@@ -49,7 +49,8 @@ export function DashboardKPIs({
     {
       label: "Valeur de marché",
       value: totalMarketValue > 0 ? formatCurrency(totalMarketValue) : "—",
-      sub: netYield !== null ? `Rendement net : ${netYield.toFixed(2)}%` : "rendement non calculable",
+      sub:
+        netYield !== null ? `Rendement net : ${netYield.toFixed(2)}%` : "rendement non calculable",
       icon: Building2,
       color: "text-orange-600",
       bg: "bg-orange-50",
@@ -57,9 +58,10 @@ export function DashboardKPIs({
     {
       label: "Dette totale",
       value: totalOutstandingDebt > 0 ? formatCurrency(totalOutstandingDebt) : "—",
-      sub: totalMarketValue > 0 && totalOutstandingDebt > 0
-        ? `LTV : ${((totalOutstandingDebt / totalMarketValue) * 100).toFixed(1)}%`
-        : "aucun emprunt",
+      sub:
+        totalMarketValue > 0 && totalOutstandingDebt > 0
+          ? `LTV : ${((totalOutstandingDebt / totalMarketValue) * 100).toFixed(1)}%`
+          : "aucun emprunt",
       icon: Landmark,
       color: "text-slate-600",
       bg: "bg-slate-100",

@@ -38,14 +38,16 @@ export async function POST(req: Request) {
     // Check if already a member
     const existing = await getUserByEmail(email);
     if (existing && existing.workspaceId === ctx.workspaceId) {
-      return NextResponse.json({ error: "Cet utilisateur est déjà membre du workspace" }, { status: 409 });
+      return NextResponse.json(
+        { error: "Cet utilisateur est déjà membre du workspace" },
+        { status: 409 },
+      );
     }
 
     // Get inviter name
     const clerk = await clerkClient();
     const inviter = await clerk.users.getUser(ctx.userId);
-    const inviterName =
-      [inviter.firstName, inviter.lastName].filter(Boolean).join(" ") || email;
+    const inviterName = [inviter.firstName, inviter.lastName].filter(Boolean).join(" ") || email;
 
     // Create invitation record in Notion
     const invitation = await createInvitation({
@@ -68,7 +70,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, message: `Invitation envoyée à ${email}` });
   } catch (err) {
     if (err instanceof Response) return err;
-    if (err instanceof z.ZodError) return NextResponse.json({ error: err.flatten() }, { status: 400 });
+    if (err instanceof z.ZodError)
+      return NextResponse.json({ error: err.flatten() }, { status: 400 });
     console.error("[POST /api/workspaces/invite]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

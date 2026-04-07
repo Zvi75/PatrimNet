@@ -20,7 +20,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Separator } from "@/components/ui/separator";
@@ -333,7 +339,8 @@ export function WorkspaceSettings() {
             <CardContent className="p-0">
               {data.members.map((member, i) => {
                 const isSelf = member.clerkUserId === data.currentUserId;
-                const isOwner = member.role === "admin" && member.clerkUserId === data.workspace.ownerUserId;
+                const isOwner =
+                  member.role === "admin" && member.clerkUserId === data.workspace.ownerUserId;
 
                 return (
                   <div

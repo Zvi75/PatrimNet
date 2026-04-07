@@ -41,7 +41,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ lease }, { status: 201 });
   } catch (err) {
     if (err instanceof Response) return err;
-    if (err instanceof z.ZodError) return NextResponse.json({ error: err.flatten() }, { status: 400 });
+    if (err instanceof z.ZodError)
+      return NextResponse.json({ error: err.flatten() }, { status: 400 });
     console.error("[POST /api/leases]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

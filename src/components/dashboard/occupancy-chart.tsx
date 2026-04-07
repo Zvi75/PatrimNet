@@ -1,7 +1,14 @@
 "use client";
 
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -11,8 +18,8 @@ interface OccupancyChartProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  "Occupé": "#22c55e",
-  "Vacant": "#ef4444",
+  Occupé: "#22c55e",
+  Vacant: "#ef4444",
   "En travaux": "#f59e0b",
   "En vente": "#3b82f6",
 };
@@ -41,7 +48,12 @@ export function OccupancyChart({ data, occupancyRate }: OccupancyChartProps) {
             <BarChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="status" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
-              <YAxis allowDecimals={false} tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+              <YAxis
+                allowDecimals={false}
+                tick={{ fontSize: 12 }}
+                tickLine={false}
+                axisLine={false}
+              />
               <Tooltip
                 formatter={(v: number) => [`${v} actif${v !== 1 ? "s" : ""}`, ""]}
                 contentStyle={{ borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 12 }}

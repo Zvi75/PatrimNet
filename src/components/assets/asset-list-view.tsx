@@ -3,19 +3,24 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  Home, MapPin, MoreHorizontal, Pencil, Trash2, Upload, TrendingUp,
-} from "lucide-react";
+import { Home, MapPin, MoreHorizontal, Pencil, Trash2, Upload, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -26,8 +31,8 @@ import { ASSET_TYPES, ASSET_STATUSES } from "@/lib/constants";
 import type { Asset, LegalEntity, UserRole } from "@/types";
 
 const STATUS_VARIANTS: Record<string, string> = {
-  "Occupé": "success",
-  "Vacant": "destructive",
+  Occupé: "success",
+  Vacant: "destructive",
   "En travaux": "warning",
   "En vente": "info",
 };
@@ -60,7 +65,8 @@ export function AssetListView({ assets, entities, role }: AssetListViewProps) {
 
   const filtered = assets.filter((a) => {
     const q = search.toLowerCase();
-    if (q && !a.name.toLowerCase().includes(q) && !a.address.toLowerCase().includes(q)) return false;
+    if (q && !a.name.toLowerCase().includes(q) && !a.address.toLowerCase().includes(q))
+      return false;
     if (filterType !== "all" && a.type !== filterType) return false;
     if (filterStatus !== "all" && a.status !== filterStatus) return false;
     if (filterEntity !== "all" && a.legalEntityId !== filterEntity) return false;
@@ -90,7 +96,15 @@ export function AssetListView({ assets, entities, role }: AssetListViewProps) {
           canEdit ? (
             <div className="flex gap-2">
               <AssetFormDialog entities={entities} trigger={<Button>Ajouter un actif</Button>} />
-              <CsvImportDialog entities={entities} trigger={<Button variant="outline"><Upload className="h-4 w-4 mr-2" />Import CSV</Button>} />
+              <CsvImportDialog
+                entities={entities}
+                trigger={
+                  <Button variant="outline">
+                    <Upload className="mr-2 h-4 w-4" />
+                    Import CSV
+                  </Button>
+                }
+              />
             </div>
           ) : undefined
         }
@@ -109,24 +123,42 @@ export function AssetListView({ assets, entities, role }: AssetListViewProps) {
           className="w-52"
         />
         <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-40"><SelectValue placeholder="Type" /></SelectTrigger>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Type" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous les types</SelectItem>
-            {ASSET_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+            {ASSET_TYPES.map((t) => (
+              <SelectItem key={t} value={t}>
+                {t}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-40"><SelectValue placeholder="Statut" /></SelectTrigger>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Statut" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous les statuts</SelectItem>
-            {ASSET_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            {ASSET_STATUSES.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select value={filterEntity} onValueChange={setFilterEntity}>
-          <SelectTrigger className="w-48"><SelectValue placeholder="Entité" /></SelectTrigger>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Entité" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Toutes les entités</SelectItem>
-            {entities.map((e) => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
+            {entities.map((e) => (
+              <SelectItem key={e.id} value={e.id}>
+                {e.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <span className="ml-auto text-sm text-slate-400">
@@ -135,7 +167,12 @@ export function AssetListView({ assets, entities, role }: AssetListViewProps) {
         {canEdit && (
           <CsvImportDialog
             entities={entities}
-            trigger={<Button variant="outline" size="sm"><Upload className="h-4 w-4 mr-1.5" />Import CSV</Button>}
+            trigger={
+              <Button variant="outline" size="sm">
+                <Upload className="mr-1.5 h-4 w-4" />
+                Import CSV
+              </Button>
+            }
           />
         )}
       </div>
@@ -162,7 +199,9 @@ export function AssetListView({ assets, entities, role }: AssetListViewProps) {
                 </div>
               </div>
               {asset.dpe && (
-                <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-xs font-bold ${DPE_COLORS[asset.dpe] ?? ""}`}>
+                <span
+                  className={`flex-shrink-0 rounded px-1.5 py-0.5 text-xs font-bold ${DPE_COLORS[asset.dpe] ?? ""}`}
+                >
                   {asset.dpe}
                 </span>
               )}
@@ -170,7 +209,9 @@ export function AssetListView({ assets, entities, role }: AssetListViewProps) {
 
             {/* Badges */}
             <div className="mb-3 flex flex-wrap gap-1.5">
-              <Badge variant="secondary" className="text-xs">{asset.type}</Badge>
+              <Badge variant="secondary" className="text-xs">
+                {asset.type}
+              </Badge>
               <Badge
                 // @ts-expect-error variant is dynamic
                 variant={STATUS_VARIANTS[asset.status] ?? "secondary"}
@@ -179,7 +220,9 @@ export function AssetListView({ assets, entities, role }: AssetListViewProps) {
                 {asset.status}
               </Badge>
               {asset.surfaceM2 && (
-                <Badge variant="outline" className="text-xs">{asset.surfaceM2} m²</Badge>
+                <Badge variant="outline" className="text-xs">
+                  {asset.surfaceM2} m²
+                </Badge>
               )}
             </div>
 
@@ -198,9 +241,10 @@ export function AssetListView({ assets, entities, role }: AssetListViewProps) {
               </div>
             )}
             {asset.ownershipPercent && (
-              <div className="flex items-center justify-between text-xs mt-1">
+              <div className="mt-1 flex items-center justify-between text-xs">
                 <span className="flex items-center gap-1 text-slate-500">
-                  <TrendingUp className="h-3 w-3" />Détention
+                  <TrendingUp className="h-3 w-3" />
+                  Détention
                 </span>
                 <span className="font-medium">{formatPercent(asset.ownershipPercent)}</span>
               </div>
@@ -217,11 +261,13 @@ export function AssetListView({ assets, entities, role }: AssetListViewProps) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => setEditAsset(asset)}>
-                      <Pencil className="mr-2 h-4 w-4" />Modifier
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Modifier
                     </DropdownMenuItem>
                     <Link href={`/assets/${asset.id}`}>
                       <DropdownMenuItem>
-                        <Home className="mr-2 h-4 w-4" />Voir la fiche
+                        <Home className="mr-2 h-4 w-4" />
+                        Voir la fiche
                       </DropdownMenuItem>
                     </Link>
                     {role === "admin" && (
@@ -229,8 +275,12 @@ export function AssetListView({ assets, entities, role }: AssetListViewProps) {
                         <DropdownMenuSeparator />
                         <ConfirmDialog
                           trigger={
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 focus:text-red-600">
-                              <Trash2 className="mr-2 h-4 w-4" />Supprimer
+                            <DropdownMenuItem
+                              onSelect={(e) => e.preventDefault()}
+                              className="text-red-600 focus:text-red-600"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Supprimer
                             </DropdownMenuItem>
                           }
                           title={`Supprimer "${asset.name}" ?`}

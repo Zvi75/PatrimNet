@@ -19,9 +19,7 @@ export default async function EntitiesPage() {
             {flat.length} entité{flat.length !== 1 ? "s" : ""} · Arborescence Holdings → Filiales
           </p>
         </div>
-        {ctx.role !== "read-only" && (
-          <CreateEntityButton entities={flat} />
-        )}
+        {ctx.role !== "read-only" && <CreateEntityButton entities={flat} />}
       </div>
       <EntityTreeView tree={tree} flat={flat} role={ctx.role} />
     </div>

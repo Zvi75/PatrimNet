@@ -33,8 +33,7 @@ export function BillingOverview({ workspace, assetCount, userCount }: BillingOve
   const currentPlanId = (workspace.plan ?? "STARTER").toUpperCase() as keyof typeof PLANS;
   const currentPlan = PLANS[currentPlanId];
 
-  const trialActive =
-    workspace.trialEndsAt && new Date(workspace.trialEndsAt) > new Date();
+  const trialActive = workspace.trialEndsAt && new Date(workspace.trialEndsAt) > new Date();
 
   const trialDaysLeft = workspace.trialEndsAt
     ? Math.max(0, Math.ceil((new Date(workspace.trialEndsAt).getTime() - Date.now()) / 86400000))
@@ -68,8 +67,14 @@ export function BillingOverview({ workspace, assetCount, userCount }: BillingOve
 
   const maxAssets = currentPlan.maxAssets === Infinity ? "∞" : currentPlan.maxAssets;
   const maxUsers = currentPlan.maxUsers === Infinity ? "∞" : currentPlan.maxUsers;
-  const assetPct = currentPlan.maxAssets === Infinity ? 0 : Math.min(100, Math.round((assetCount / currentPlan.maxAssets) * 100));
-  const userPct = currentPlan.maxUsers === Infinity ? 0 : Math.min(100, Math.round((userCount / currentPlan.maxUsers) * 100));
+  const assetPct =
+    currentPlan.maxAssets === Infinity
+      ? 0
+      : Math.min(100, Math.round((assetCount / currentPlan.maxAssets) * 100));
+  const userPct =
+    currentPlan.maxUsers === Infinity
+      ? 0
+      : Math.min(100, Math.round((userCount / currentPlan.maxUsers) * 100));
 
   return (
     <div className="space-y-8">
@@ -84,7 +89,8 @@ export function BillingOverview({ workspace, assetCount, userCount }: BillingOve
             </div>
             {trialActive && (
               <p className="mt-1 text-xs text-amber-600">
-                Essai gratuit — {trialDaysLeft} jour{trialDaysLeft > 1 ? "s" : ""} restant{trialDaysLeft > 1 ? "s" : ""}
+                Essai gratuit — {trialDaysLeft} jour{trialDaysLeft > 1 ? "s" : ""} restant
+                {trialDaysLeft > 1 ? "s" : ""}
               </p>
             )}
           </CardContent>
@@ -149,75 +155,77 @@ export function BillingOverview({ workspace, assetCount, userCount }: BillingOve
       <div>
         <h2 className="mb-4 text-base font-semibold text-slate-800">Choisir un plan</h2>
         <div className="grid gap-4 lg:grid-cols-3">
-          {(Object.entries(PLANS) as [keyof typeof PLANS, (typeof PLANS)[keyof typeof PLANS]][]).map(
-            ([planKey, plan]) => {
-              const Icon = PLAN_ICONS[planKey];
-              const isCurrent = planKey === currentPlanId;
-              const isLoading = loadingPlan === planKey;
+          {(
+            Object.entries(PLANS) as [keyof typeof PLANS, (typeof PLANS)[keyof typeof PLANS]][]
+          ).map(([planKey, plan]) => {
+            const Icon = PLAN_ICONS[planKey];
+            const isCurrent = planKey === currentPlanId;
+            const isLoading = loadingPlan === planKey;
 
-              return (
-                <Card
-                  key={planKey}
-                  className={`flex flex-col ${isCurrent ? "ring-2 ring-blue-500" : ""}`}
-                >
-                  <CardHeader className="pb-2">
-                    <div className="flex items-start justify-between">
-                      <div className="rounded-lg bg-blue-50 p-2">
-                        <Icon className="h-5 w-5 text-blue-600" />
-                      </div>
-                      {isCurrent && (
-                        <Badge className="bg-blue-100 text-blue-700">Plan actuel</Badge>
-                      )}
+            return (
+              <Card
+                key={planKey}
+                className={`flex flex-col ${isCurrent ? "ring-2 ring-blue-500" : ""}`}
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between">
+                    <div className="rounded-lg bg-blue-50 p-2">
+                      <Icon className="h-5 w-5 text-blue-600" />
                     </div>
-                    <CardTitle className="mt-3 text-lg">{plan.name}</CardTitle>
-                    <CardDescription>
-                      <span className="text-2xl font-bold text-slate-900">{plan.price}€</span>
-                      <span className="text-slate-500"> / mois</span>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex flex-1 flex-col">
-                    <ul className="flex-1 space-y-2">
-                      {plan.features.map((f) => (
-                        <li key={f} className="flex items-start gap-2 text-sm text-slate-600">
-                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
-                          {f}
-                        </li>
-                      ))}
-                      <li className="flex items-start gap-2 text-sm text-slate-600">
+                    {isCurrent && <Badge className="bg-blue-100 text-blue-700">Plan actuel</Badge>}
+                  </div>
+                  <CardTitle className="mt-3 text-lg">{plan.name}</CardTitle>
+                  <CardDescription>
+                    <span className="text-2xl font-bold text-slate-900">{plan.price}€</span>
+                    <span className="text-slate-500"> / mois</span>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-1 flex-col">
+                  <ul className="flex-1 space-y-2">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-sm text-slate-600">
                         <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
-                        {plan.maxAssets === Infinity ? "Actifs illimités" : `Jusqu'à ${plan.maxAssets} actifs`}
+                        {f}
                       </li>
-                      <li className="flex items-start gap-2 text-sm text-slate-600">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
-                        {plan.maxUsers === Infinity ? "Utilisateurs illimités" : `${plan.maxUsers} utilisateur${plan.maxUsers > 1 ? "s" : ""}`}
-                      </li>
-                    </ul>
+                    ))}
+                    <li className="flex items-start gap-2 text-sm text-slate-600">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
+                      {plan.maxAssets === Infinity
+                        ? "Actifs illimités"
+                        : `Jusqu'à ${plan.maxAssets} actifs`}
+                    </li>
+                    <li className="flex items-start gap-2 text-sm text-slate-600">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
+                      {plan.maxUsers === Infinity
+                        ? "Utilisateurs illimités"
+                        : `${plan.maxUsers} utilisateur${plan.maxUsers > 1 ? "s" : ""}`}
+                    </li>
+                  </ul>
 
-                    <Button
-                      className="mt-4 w-full"
-                      variant={isCurrent ? "outline" : "default"}
-                      disabled={isCurrent || isLoading}
-                      onClick={() => handleCheckout(planKey)}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Redirection…
-                        </>
-                      ) : isCurrent ? (
-                        <>
-                          <CreditCard className="mr-2 h-4 w-4" />
-                          Plan actuel
-                        </>
-                      ) : (
-                        `Passer au plan ${plan.name}`
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-              );
-            },
-          )}
+                  <Button
+                    className="mt-4 w-full"
+                    variant={isCurrent ? "outline" : "default"}
+                    disabled={isCurrent || isLoading}
+                    onClick={() => handleCheckout(planKey)}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Redirection…
+                      </>
+                    ) : isCurrent ? (
+                      <>
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Plan actuel
+                      </>
+                    ) : (
+                      `Passer au plan ${plan.name}`
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </div>

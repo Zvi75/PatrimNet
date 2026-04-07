@@ -21,12 +21,12 @@ export default async function LeasesPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Gestion des baux</h1>
           <p className="mt-1 text-sm text-slate-500">
-            {leases.length} bail{leases.length !== 1 ? "x" : ""} · {leases.filter((l) => l.status === "Actif").length} actif{leases.filter((l) => l.status === "Actif").length !== 1 ? "s" : ""}
+            {leases.length} bail{leases.length !== 1 ? "x" : ""} ·{" "}
+            {leases.filter((l) => l.status === "Actif").length} actif
+            {leases.filter((l) => l.status === "Actif").length !== 1 ? "s" : ""}
           </p>
         </div>
-        {ctx.role !== "read-only" && (
-          <CreateLeaseButton assets={assets} tenants={tenants} />
-        )}
+        {ctx.role !== "read-only" && <CreateLeaseButton assets={assets} tenants={tenants} />}
       </div>
       <LeaseListView leases={leases} assets={assets} tenants={tenants} role={ctx.role} />
     </div>

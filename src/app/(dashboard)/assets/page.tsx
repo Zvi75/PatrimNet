@@ -30,9 +30,7 @@ export default async function AssetsPage() {
             {assets.length !== 1 ? "s" : ""}
           </p>
         </div>
-        {ctx.role !== "read-only" && (
-          <CreateAssetButton entities={entities} />
-        )}
+        {ctx.role !== "read-only" && <CreateAssetButton entities={entities} />}
       </div>
       <AssetListView assets={assets} entities={entities} role={ctx.role} />
     </div>

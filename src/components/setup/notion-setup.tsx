@@ -205,10 +205,9 @@ export function NotionSetup({ isConfigured }: NotionSetupProps) {
               <div className="flex gap-2">
                 <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-400" />
                 <p className="text-xs text-amber-300">
-                  <strong>Important :</strong> Ajoutez ces 10 lignes à votre{" "}
-                  <code>.env.local</code>, puis relancez{" "}
-                  <code className="rounded bg-slate-800 px-1">npm run dev</code>. Sur Vercel,
-                  ajoutez-les dans Settings → Environment Variables.
+                  <strong>Important :</strong> Ajoutez ces 10 lignes à votre <code>.env.local</code>
+                  , puis relancez <code className="rounded bg-slate-800 px-1">npm run dev</code>.
+                  Sur Vercel, ajoutez-les dans Settings → Environment Variables.
                 </p>
               </div>
             </div>

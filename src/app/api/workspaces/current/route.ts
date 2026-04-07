@@ -16,7 +16,12 @@ export async function GET() {
       return NextResponse.json({ error: "Workspace not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ workspace, members, currentUserId: ctx.userId, currentRole: ctx.role });
+    return NextResponse.json({
+      workspace,
+      members,
+      currentUserId: ctx.userId,
+      currentRole: ctx.role,
+    });
   } catch (err) {
     if (err instanceof Response) return err;
     console.error("[GET /api/workspaces/current]", err);
@@ -40,7 +45,8 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof Response) return err;
-    if (err instanceof z.ZodError) return NextResponse.json({ error: err.flatten() }, { status: 400 });
+    if (err instanceof z.ZodError)
+      return NextResponse.json({ error: err.flatten() }, { status: 400 });
     console.error("[PATCH /api/workspaces/current]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

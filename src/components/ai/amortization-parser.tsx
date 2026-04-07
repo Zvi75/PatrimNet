@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import { Upload, CheckCircle2, AlertCircle, Loader2, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
@@ -57,8 +63,8 @@ export function AmortizationParser({ loans, assets }: AmortizationParserProps) {
         file.type === "application/pdf"
           ? "application/pdf"
           : file.type.startsWith("image/")
-          ? file.type
-          : "application/pdf";
+            ? file.type
+            : "application/pdf";
 
       const res = await fetch("/api/ai/parse-amortization", {
         method: "POST",
@@ -97,7 +103,8 @@ export function AmortizationParser({ loans, assets }: AmortizationParserProps) {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-slate-400">
-            Créez d'abord un emprunt dans la section Emprunts pour pouvoir parser son tableau d'amortissement.
+            Créez d'abord un emprunt dans la section Emprunts pour pouvoir parser son tableau
+            d'amortissement.
           </p>
         </CardContent>
       </Card>
@@ -114,8 +121,8 @@ export function AmortizationParser({ loans, assets }: AmortizationParserProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-xs text-slate-500">
-          Uploadez un PDF ou une image d'un tableau d'amortissement bancaire. Claude extraira automatiquement
-          toutes les lignes et les enregistrera dans Notion.
+          Uploadez un PDF ou une image d'un tableau d'amortissement bancaire. Claude extraira
+          automatiquement toutes les lignes et les enregistrera dans Notion.
         </p>
 
         <div className="space-y-2">
@@ -190,11 +197,7 @@ export function AmortizationParser({ loans, assets }: AmortizationParserProps) {
           </div>
         )}
 
-        <Button
-          onClick={handleParse}
-          disabled={!loanId || !file || loading}
-          className="w-full"
-        >
+        <Button onClick={handleParse} disabled={!loanId || !file || loading} className="w-full">
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -8,8 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -104,13 +107,15 @@ export function LoanListView({ loans, assets, entities, leases, role }: LoanList
         icon={CreditCard}
         title="Aucun emprunt"
         description="Ajoutez vos emprunts immobiliers pour suivre les tableaux d'amortissement et calculer le DSCR."
-        action={canEdit ? (
-          <LoanFormDialog
-            assets={assets}
-            entities={entities}
-            trigger={<Button>Ajouter un emprunt</Button>}
-          />
-        ) : undefined}
+        action={
+          canEdit ? (
+            <LoanFormDialog
+              assets={assets}
+              entities={entities}
+              trigger={<Button>Ajouter un emprunt</Button>}
+            />
+          ) : undefined
+        }
       />
     );
   }
@@ -125,7 +130,9 @@ export function LoanListView({ loans, assets, entities, leases, role }: LoanList
         </div>
         <div className="rounded-lg border border-slate-100 bg-white p-4">
           <p className="text-xs text-slate-400">Service de la dette / mois</p>
-          <p className="mt-1 text-xl font-bold text-slate-900">{formatCurrency(totalMonthlyService)}</p>
+          <p className="mt-1 text-xl font-bold text-slate-900">
+            {formatCurrency(totalMonthlyService)}
+          </p>
         </div>
         <div className="rounded-lg border border-slate-100 bg-white p-4">
           <p className="text-xs text-slate-400">Nombre d'emprunts</p>
@@ -156,7 +163,10 @@ export function LoanListView({ loans, assets, entities, leases, role }: LoanList
           const asset = assetMap.get(loan.assetId);
 
           return (
-            <div key={loan.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div
+              key={loan.id}
+              className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
               <div className="flex items-start justify-between gap-4">
                 {/* Left info */}
                 <div className="min-w-0 flex-1">
@@ -170,9 +180,20 @@ export function LoanListView({ loans, assets, entities, leases, role }: LoanList
                   </div>
 
                   <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
-                    {asset && <span>Actif : <span className="font-medium text-slate-600">{asset.name}</span></span>}
-                    <span>Entité : <span className="font-medium text-slate-600">{entityMap.get(loan.legalEntityId) ?? "—"}</span></span>
-                    <span>{formatDate(loan.startDate)} → {formatDate(loan.endDate)}</span>
+                    {asset && (
+                      <span>
+                        Actif : <span className="font-medium text-slate-600">{asset.name}</span>
+                      </span>
+                    )}
+                    <span>
+                      Entité :{" "}
+                      <span className="font-medium text-slate-600">
+                        {entityMap.get(loan.legalEntityId) ?? "—"}
+                      </span>
+                    </span>
+                    <span>
+                      {formatDate(loan.startDate)} → {formatDate(loan.endDate)}
+                    </span>
                     <span>{remainingMonths} mois restants</span>
                   </div>
                 </div>
@@ -187,15 +208,20 @@ export function LoanListView({ loans, assets, entities, leases, role }: LoanList
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => setEditLoan(loan)}>
-                        <Pencil className="mr-2 h-4 w-4" />Modifier
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Modifier
                       </DropdownMenuItem>
                       {role === "admin" && (
                         <>
                           <DropdownMenuSeparator />
                           <ConfirmDialog
                             trigger={
-                              <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 focus:text-red-600">
-                                <Trash2 className="mr-2 h-4 w-4" />Supprimer
+                              <DropdownMenuItem
+                                onSelect={(e) => e.preventDefault()}
+                                className="text-red-600 focus:text-red-600"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Supprimer
                               </DropdownMenuItem>
                             }
                             title={`Supprimer "${loan.reference}" ?`}
@@ -227,7 +253,9 @@ export function LoanListView({ loans, assets, entities, leases, role }: LoanList
                 </div>
                 <div>
                   <p className="text-xs text-slate-400">Capital restant dû</p>
-                  <p className="text-sm font-semibold">{outstanding ? formatCurrency(outstanding) : "—"}</p>
+                  <p className="text-sm font-semibold">
+                    {outstanding ? formatCurrency(outstanding) : "—"}
+                  </p>
                 </div>
               </div>
 
@@ -235,7 +263,9 @@ export function LoanListView({ loans, assets, entities, leases, role }: LoanList
               <div className="mt-3 flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-400">DSCR :</span>
-                  <span className={`text-sm font-bold ${dscrOk ? "text-green-600" : dscrWarn ? "text-orange-500" : "text-red-600"}`}>
+                  <span
+                    className={`text-sm font-bold ${dscrOk ? "text-green-600" : dscrWarn ? "text-orange-500" : "text-red-600"}`}
+                  >
                     {dscr === Infinity ? "∞" : dscr.toFixed(2)}
                   </span>
                   {dscrBad && (
@@ -245,7 +275,7 @@ export function LoanListView({ loans, assets, entities, leases, role }: LoanList
                     </div>
                   )}
                   {dscrWarn && (
-                    <div className="flex items-center gap-1 rounded-md bg-orange-50 px-2 py.0.5">
+                    <div className="py.0.5 flex items-center gap-1 rounded-md bg-orange-50 px-2">
                       <AlertTriangle className="h-3 w-3 text-orange-500" />
                       <span className="text-xs text-orange-600">Limite</span>
                     </div>

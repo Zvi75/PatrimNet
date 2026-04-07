@@ -11,7 +11,11 @@ interface CreateTransactionButtonProps {
   leases: Lease[];
 }
 
-export function CreateTransactionButton({ assets, entities, leases }: CreateTransactionButtonProps) {
+export function CreateTransactionButton({
+  assets,
+  entities,
+  leases,
+}: CreateTransactionButtonProps) {
   return (
     <TransactionFormDialog
       assets={assets}

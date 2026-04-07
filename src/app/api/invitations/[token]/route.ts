@@ -2,10 +2,7 @@ import { NextResponse } from "next/server";
 import { getInvitationByToken } from "@/lib/notion/invitations";
 import { getWorkspaceById } from "@/lib/notion/workspaces";
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ token: string }> },
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ token: string }> }) {
   try {
     const { token } = await params;
     const invitation = await getInvitationByToken(token);

@@ -1,7 +1,13 @@
 "use client";
 
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
@@ -48,8 +54,22 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
                 formatter={(v: number) => formatCurrency(v)}
                 contentStyle={{ borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 12 }}
               />
-              <Area type="monotone" dataKey="encaissements" stroke="#22c55e" strokeWidth={2} fill="url(#enc)" name="Encaissements" />
-              <Area type="monotone" dataKey="decaissements" stroke="#ef4444" strokeWidth={2} fill="url(#dec)" name="Décaissements" />
+              <Area
+                type="monotone"
+                dataKey="encaissements"
+                stroke="#22c55e"
+                strokeWidth={2}
+                fill="url(#enc)"
+                name="Encaissements"
+              />
+              <Area
+                type="monotone"
+                dataKey="decaissements"
+                stroke="#ef4444"
+                strokeWidth={2}
+                fill="url(#dec)"
+                name="Décaissements"
+              />
             </AreaChart>
           </ResponsiveContainer>
         )}

@@ -12,9 +12,7 @@ type NotionPage = { id: string; properties: Record<string, unknown> };
 
 function pageToTenant(page: NotionPage): Tenant {
   // Phone number extraction
-  const phoneProp = (page.properties as Record<string, { phone_number?: string | null }>)[
-    "Phone"
-  ];
+  const phoneProp = (page.properties as Record<string, { phone_number?: string | null }>)["Phone"];
 
   return {
     id: page.id,
@@ -52,8 +50,12 @@ export async function createTenant(data: {
       ...(data.siret && { SIRET: { rich_text: [{ text: { content: data.siret } }] } }),
       ...(data.email && { Email: { email: data.email } }),
       ...(data.phone && { Phone: { phone_number: data.phone } }),
-      ...(data.guarantorName && { "Guarantor Name": { rich_text: [{ text: { content: data.guarantorName } }] } }),
-      ...(data.guarantorContact && { "Guarantor Contact": { rich_text: [{ text: { content: data.guarantorContact } }] } }),
+      ...(data.guarantorName && {
+        "Guarantor Name": { rich_text: [{ text: { content: data.guarantorName } }] },
+      }),
+      ...(data.guarantorContact && {
+        "Guarantor Contact": { rich_text: [{ text: { content: data.guarantorContact } }] },
+      }),
       ...(data.paymentScore && { "Payment Score": { select: { name: data.paymentScore } } }),
       ...(data.notes && { Notes: { rich_text: [{ text: { content: data.notes } }] } }),
     },
@@ -98,13 +100,21 @@ export async function updateTenant(
     properties: {
       ...(data.name && { Name: { title: [{ text: { content: data.name } }] } }),
       ...(data.type && { Type: { select: { name: data.type } } }),
-      ...(data.siret !== undefined && { SIRET: { rich_text: [{ text: { content: data.siret } }] } }),
+      ...(data.siret !== undefined && {
+        SIRET: { rich_text: [{ text: { content: data.siret } }] },
+      }),
       ...(data.email !== undefined && { Email: { email: data.email } }),
       ...(data.phone !== undefined && { Phone: { phone_number: data.phone } }),
-      ...(data.guarantorName !== undefined && { "Guarantor Name": { rich_text: [{ text: { content: data.guarantorName } }] } }),
-      ...(data.guarantorContact !== undefined && { "Guarantor Contact": { rich_text: [{ text: { content: data.guarantorContact } }] } }),
+      ...(data.guarantorName !== undefined && {
+        "Guarantor Name": { rich_text: [{ text: { content: data.guarantorName } }] },
+      }),
+      ...(data.guarantorContact !== undefined && {
+        "Guarantor Contact": { rich_text: [{ text: { content: data.guarantorContact } }] },
+      }),
       ...(data.paymentScore && { "Payment Score": { select: { name: data.paymentScore } } }),
-      ...(data.notes !== undefined && { Notes: { rich_text: [{ text: { content: data.notes } }] } }),
+      ...(data.notes !== undefined && {
+        Notes: { rich_text: [{ text: { content: data.notes } }] },
+      }),
     },
   });
 }

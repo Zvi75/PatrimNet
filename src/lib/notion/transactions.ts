@@ -107,7 +107,10 @@ export async function listTransactions(
     filterConditions.push({ property: "Asset", relation: { contains: filters.assetId } });
   }
   if (filters?.legalEntityId) {
-    filterConditions.push({ property: "Legal Entity", relation: { contains: filters.legalEntityId } });
+    filterConditions.push({
+      property: "Legal Entity",
+      relation: { contains: filters.legalEntityId },
+    });
   }
   if (filters?.dateFrom) {
     filterConditions.push({ property: "Date", date: { on_or_after: filters.dateFrom } });
@@ -150,7 +153,9 @@ export async function updateTransaction(
       ...(data.direction && { Direction: { select: { name: data.direction } } }),
       ...(data.date && { Date: { date: { start: data.date } } }),
       ...(data.reconciled !== undefined && { Reconciled: { checkbox: data.reconciled } }),
-      ...(data.notes !== undefined && { Notes: { rich_text: [{ text: { content: data.notes } }] } }),
+      ...(data.notes !== undefined && {
+        Notes: { rich_text: [{ text: { content: data.notes } }] },
+      }),
       ...(data.assetId && { Asset: { relation: [{ id: data.assetId }] } }),
       ...(data.legalEntityId && { "Legal Entity": { relation: [{ id: data.legalEntityId }] } }),
       ...(data.leaseId && { Lease: { relation: [{ id: data.leaseId }] } }),
