@@ -12,13 +12,13 @@ import {
   buildTenantReportData,
 } from "@/lib/reports/data";
 import {
-  buildPortfolioHTML,
-  buildAssetHTML,
-  buildCashFlowHTML,
-  buildFiscalHTML,
-  buildLoanPlanHTML,
-  buildTenantReportHTML,
-} from "@/lib/reports/pdf";
+  buildPortfolioPdf,
+  buildAssetPdf,
+  buildCashFlowPdf,
+  buildFiscalPdf,
+  buildLoanPlanPdf,
+  buildTenantReportPdf,
+} from "@/lib/reports/pdf-pdfkit";
 import {
   buildPortfolioDocx,
   buildAssetDocx,
@@ -35,8 +35,6 @@ import {
   buildLoanPlanXlsx,
   buildTenantReportXlsx,
 } from "@/lib/reports/xlsx";
-import puppeteer from "puppeteer";
-
 const schema = z.object({
   reportType: z.enum([
     "rapport-portefeuille",
@@ -58,25 +56,6 @@ const schema = z.object({
     .optional()
     .default({}),
 });
-
-async function htmlToPdf(html: string): Promise<Buffer> {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
-  try {
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
-    const pdf = await page.pdf({
-      format: "A4",
-      printBackground: true,
-      margin: { top: "20mm", right: "15mm", bottom: "20mm", left: "15mm" },
-    });
-    return Buffer.from(pdf);
-  } finally {
-    await browser.close();
-  }
-}
 
 export async function POST(req: Request) {
   try {
@@ -106,7 +85,7 @@ export async function POST(req: Request) {
       case "rapport-portefeuille": {
         const d = await buildPortfolioReportData(wid);
         [pdfBuffer, docxBuffer, xlsxBuffer] = await Promise.all([
-          htmlToPdf(buildPortfolioHTML(d)),
+          buildPortfolioPdf(d),
           buildPortfolioDocx(d),
           buildPortfolioXlsx(d),
         ]);
@@ -120,7 +99,7 @@ export async function POST(req: Request) {
         }
         const d = await buildAssetReportData(wid, params.assetId);
         [pdfBuffer, docxBuffer, xlsxBuffer] = await Promise.all([
-          htmlToPdf(buildAssetHTML(d)),
+          buildAssetPdf(d),
           buildAssetDocx(d),
           buildAssetXlsx(d),
         ]);
@@ -135,7 +114,7 @@ export async function POST(req: Request) {
         const dateTo = params.dateTo ?? new Date().toISOString().slice(0, 10);
         const d = await buildCashFlowData(wid, dateFrom, dateTo);
         [pdfBuffer, docxBuffer, xlsxBuffer] = await Promise.all([
-          htmlToPdf(buildCashFlowHTML(d)),
+          buildCashFlowPdf(d),
           buildCashFlowDocx(d),
           buildCashFlowXlsx(d),
         ]);
@@ -147,7 +126,7 @@ export async function POST(req: Request) {
         const year = params.year ?? new Date().getFullYear();
         const d = await buildFiscalData(wid, year);
         [pdfBuffer, docxBuffer, xlsxBuffer] = await Promise.all([
-          htmlToPdf(buildFiscalHTML(d)),
+          buildFiscalPdf(d),
           buildFiscalDocx(d),
           buildFiscalXlsx(d),
         ]);
@@ -161,7 +140,7 @@ export async function POST(req: Request) {
         }
         const d = await buildLoanPlanData(wid, params.loanId);
         [pdfBuffer, docxBuffer, xlsxBuffer] = await Promise.all([
-          htmlToPdf(buildLoanPlanHTML(d)),
+          buildLoanPlanPdf(d),
           buildLoanPlanDocx(d),
           buildLoanPlanXlsx(d),
         ]);
@@ -175,7 +154,7 @@ export async function POST(req: Request) {
         }
         const d = await buildTenantReportData(wid, params.leaseId);
         [pdfBuffer, docxBuffer, xlsxBuffer] = await Promise.all([
-          htmlToPdf(buildTenantReportHTML(d)),
+          buildTenantReportPdf(d),
           buildTenantReportDocx(d),
           buildTenantReportXlsx(d),
         ]);
