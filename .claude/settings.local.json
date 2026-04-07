@@ -6,7 +6,9 @@
       "Bash(chmod -R u+w /Users/admin/.npm/_cacache)",
       "Bash(npx tsc:*)",
       "Bash(node:*)",
-      "Bash(ls /Users/admin/patrimnet/.env*)"
+      "Bash(ls /Users/admin/patrimnet/.env*)",
+      "Bash(npm audit:*)",
+      "Bash(git add:*)"
     ]
   }
 }

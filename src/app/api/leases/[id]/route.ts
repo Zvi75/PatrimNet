@@ -19,10 +19,11 @@ const schema = z.object({
   status: z.enum(LEASE_STATUSES).optional(),
 });
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const ctx = await getApiContext();
-    const lease = await getLeaseById(params.id);
+    const lease = await getLeaseById(id);
     if (!lease || lease.workspaceId !== ctx.workspaceId)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ lease });
@@ -32,18 +33,19 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const ctx = await getApiContext();
     if (ctx.role === "read-only") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-    const lease = await getLeaseById(params.id);
+    const lease = await getLeaseById(id);
     if (!lease || lease.workspaceId !== ctx.workspaceId)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const body = await req.json();
     const data = schema.parse(body);
-    await updateLease(params.id, data);
+    await updateLease(id, data);
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof Response) return err;
@@ -52,16 +54,17 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 }
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const ctx = await getApiContext();
     if (ctx.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-    const lease = await getLeaseById(params.id);
+    const lease = await getLeaseById(id);
     if (!lease || lease.workspaceId !== ctx.workspaceId)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    await deleteLease(params.id);
+    await deleteLease(id);
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof Response) return err;

@@ -18,10 +18,11 @@ const schema = z.object({
   notes: z.string().max(2000).optional(),
 });
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const ctx = await getApiContext();
-    const tx = await getTransactionById(params.id);
+    const tx = await getTransactionById(id);
     if (!tx || tx.workspaceId !== ctx.workspaceId)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ transaction: tx });
@@ -31,18 +32,19 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const ctx = await getApiContext();
     if (ctx.role === "read-only") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-    const tx = await getTransactionById(params.id);
+    const tx = await getTransactionById(id);
     if (!tx || tx.workspaceId !== ctx.workspaceId)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const body = await req.json();
     const data = schema.parse(body);
-    await updateTransaction(params.id, data);
+    await updateTransaction(id, data);
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof Response) return err;
@@ -51,16 +53,17 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 }
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const ctx = await getApiContext();
     if (ctx.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-    const tx = await getTransactionById(params.id);
+    const tx = await getTransactionById(id);
     if (!tx || tx.workspaceId !== ctx.workspaceId)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    await deleteTransaction(params.id);
+    await deleteTransaction(id);
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof Response) return err;

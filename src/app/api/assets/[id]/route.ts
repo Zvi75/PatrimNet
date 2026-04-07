@@ -22,18 +22,18 @@ const schema = z.object({
   notes: z.string().max(2000).optional(),
 });
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const ctx = await getApiContext();
-    const asset = await getAssetById(params.id);
+    const asset = await getAssetById(id);
     if (!asset || asset.workspaceId !== ctx.workspaceId)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    // Fetch related data in parallel
     const [leases, loans, documents] = await Promise.all([
-      listLeasesByAsset(params.id),
-      listLoansByAsset(params.id),
-      listDocumentsByAsset(params.id),
+      listLeasesByAsset(id),
+      listLoansByAsset(id),
+      listDocumentsByAsset(id),
     ]);
 
     return NextResponse.json({ asset, leases, loans, documents });
@@ -43,18 +43,19 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const ctx = await getApiContext();
     if (ctx.role === "read-only") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-    const asset = await getAssetById(params.id);
+    const asset = await getAssetById(id);
     if (!asset || asset.workspaceId !== ctx.workspaceId)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const body = await req.json();
     const data = schema.parse(body);
-    await updateAsset(params.id, data);
+    await updateAsset(id, data);
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof Response) return err;
@@ -63,16 +64,17 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 }
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const ctx = await getApiContext();
     if (ctx.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-    const asset = await getAssetById(params.id);
+    const asset = await getAssetById(id);
     if (!asset || asset.workspaceId !== ctx.workspaceId)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    await deleteAsset(params.id);
+    await deleteAsset(id);
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof Response) return err;

@@ -9,9 +9,10 @@ const patchSchema = z.object({ role: z.enum(["analyst", "read-only"]) });
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { userId: string } },
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
+    const { userId } = await params;
     const ctx = await getApiContext();
     assertAdmin(ctx);
 
@@ -20,13 +21,13 @@ export async function PATCH(
 
     // Find member's Notion record
     const members = await getWorkspaceMembers(ctx.workspaceId);
-    const member = members.find((m) => m.clerkUserId === params.userId);
+    const member = members.find((m) => m.clerkUserId === userId);
     if (!member?.notionId) {
       return NextResponse.json({ error: "Member not found" }, { status: 404 });
     }
 
     // Cannot change own role
-    if (params.userId === ctx.userId) {
+    if (userId === ctx.userId) {
       return NextResponse.json({ error: "Impossible de modifier son propre rôle" }, { status: 400 });
     }
 
@@ -34,9 +35,9 @@ export async function PATCH(
 
     // Update Clerk metadata too
     const clerk = await clerkClient();
-    const clerkUser = await clerk.users.getUser(params.userId).catch(() => null);
+    const clerkUser = await clerk.users.getUser(userId).catch(() => null);
     if (clerkUser) {
-      await clerk.users.updateUserMetadata(params.userId, {
+      await clerk.users.updateUserMetadata(userId, {
         publicMetadata: { workspaceId: ctx.workspaceId, role },
       });
     }
@@ -52,18 +53,19 @@ export async function PATCH(
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: { userId: string } },
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
+    const { userId } = await params;
     const ctx = await getApiContext();
     assertAdmin(ctx);
 
-    if (params.userId === ctx.userId) {
+    if (userId === ctx.userId) {
       return NextResponse.json({ error: "Impossible de se retirer soi-même" }, { status: 400 });
     }
 
     const members = await getWorkspaceMembers(ctx.workspaceId);
-    const member = members.find((m) => m.clerkUserId === params.userId);
+    const member = members.find((m) => m.clerkUserId === userId);
     if (!member?.notionId) {
       return NextResponse.json({ error: "Member not found" }, { status: 404 });
     }
@@ -73,9 +75,9 @@ export async function DELETE(
 
     // Clear Clerk metadata
     const clerk = await clerkClient();
-    const clerkUser = await clerk.users.getUser(params.userId).catch(() => null);
+    const clerkUser = await clerk.users.getUser(userId).catch(() => null);
     if (clerkUser) {
-      await clerk.users.updateUserMetadata(params.userId, {
+      await clerk.users.updateUserMetadata(userId, {
         publicMetadata: {},
       });
     }

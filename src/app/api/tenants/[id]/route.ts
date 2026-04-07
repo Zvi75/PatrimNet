@@ -16,10 +16,11 @@ const schema = z.object({
   notes: z.string().max(2000).optional(),
 });
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const ctx = await getApiContext();
-    const tenant = await getTenantById(params.id);
+    const tenant = await getTenantById(id);
     if (!tenant) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ tenant });
   } catch (err) {
@@ -28,17 +29,18 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const ctx = await getApiContext();
     if (ctx.role === "read-only") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-    const tenant = await getTenantById(params.id);
+    const tenant = await getTenantById(id);
     if (!tenant) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const body = await req.json();
     const data = schema.parse(body);
-    await updateTenant(params.id, data);
+    await updateTenant(id, data);
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof Response) return err;
@@ -47,15 +49,16 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 }
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const ctx = await getApiContext();
     if (ctx.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-    const tenant = await getTenantById(params.id);
+    const tenant = await getTenantById(id);
     if (!tenant) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    await deleteTenant(params.id);
+    await deleteTenant(id);
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof Response) return err;

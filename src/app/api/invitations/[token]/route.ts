@@ -4,10 +4,11 @@ import { getWorkspaceById } from "@/lib/notion/workspaces";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { token: string } },
+  { params }: { params: Promise<{ token: string }> },
 ) {
   try {
-    const invitation = await getInvitationByToken(params.token);
+    const { token } = await params;
+    const invitation = await getInvitationByToken(token);
     if (!invitation) {
       return NextResponse.json({ error: "Invitation introuvable ou expirée" }, { status: 404 });
     }
