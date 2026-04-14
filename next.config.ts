@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["puppeteer", "@notionhq/client", "pdfkit"],
+  serverExternalPackages: ["@notionhq/client", "pdfkit"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "uploadthing.com" },
