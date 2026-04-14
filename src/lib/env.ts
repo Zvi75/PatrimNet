@@ -25,10 +25,17 @@ const REQUIRED_SERVER_VARS = [
 
 const REQUIRED_PUBLIC_VARS = ["NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "NEXT_PUBLIC_APP_URL"] as const;
 
+// isDemoMode is true when either the server-side DEMO_MODE var or the public
+// NEXT_PUBLIC_DEMO_MODE var is "true". NEXT_PUBLIC_* vars are inlined at build
+// time by Next.js, so DEMO_MODE (plain, runtime-read) is the authoritative check.
+export function isServerDemoMode(): boolean {
+  return process.env.DEMO_MODE === "true" || process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+}
+
 export function validateEnv(): void {
   // In demo mode, only Clerk credentials are required.
   // Notion, Stripe, Anthropic, and APP_URL are not needed.
-  if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+  if (isServerDemoMode()) {
     const missing: string[] = [];
     if (!process.env.CLERK_SECRET_KEY) missing.push("CLERK_SECRET_KEY");
     if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)

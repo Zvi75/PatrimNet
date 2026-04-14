@@ -8,7 +8,7 @@ import { validateEnv } from "@/lib/env";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const tag = "[DashboardLayout]";
-  console.log(tag, "start — demo:", process.env.NEXT_PUBLIC_DEMO_MODE, "node:", process.version);
+  console.log(tag, "start — DEMO_MODE:", process.env.DEMO_MODE, "| NEXT_PUBLIC_DEMO_MODE:", process.env.NEXT_PUBLIC_DEMO_MODE, "node:", process.version);
   console.log(
     tag,
     "env check — CLERK_SECRET_KEY:",
