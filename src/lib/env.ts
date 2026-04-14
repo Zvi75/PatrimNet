@@ -26,16 +26,16 @@ const REQUIRED_SERVER_VARS = [
 const REQUIRED_PUBLIC_VARS = ["NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "NEXT_PUBLIC_APP_URL"] as const;
 
 export function validateEnv(): void {
-  // In demo mode, Notion/Stripe/Anthropic credentials are not required.
+  // In demo mode, only Clerk credentials are required.
+  // Notion, Stripe, Anthropic, and APP_URL are not needed.
   if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
-    const missingPublic: string[] = [];
-    for (const key of REQUIRED_PUBLIC_VARS) {
-      if (!process.env[key]) missingPublic.push(key);
-    }
-    if (!process.env.CLERK_SECRET_KEY) missingPublic.push("CLERK_SECRET_KEY");
-    if (missingPublic.length > 0) {
+    const missing: string[] = [];
+    if (!process.env.CLERK_SECRET_KEY) missing.push("CLERK_SECRET_KEY");
+    if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)
+      missing.push("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY");
+    if (missing.length > 0) {
       throw new Error(
-        `[PatrimNet] Missing required environment variables:\n${missingPublic.map((k) => `  • ${k}`).join("\n")}\n\nSee .env.local.example for reference.`,
+        `[PatrimNet] Missing required environment variables:\n${missing.map((k) => `  • ${k}`).join("\n")}\n\nSee .env.local.example for reference.`,
       );
     }
     return;
